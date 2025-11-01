@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QGridLayout
+    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox
 )
 from PySide6.QtCore import Qt
 
@@ -14,6 +14,7 @@ class MatrixApp(QWidget):
 
         self.num_rows = 2 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
         self.num_cols = 2 #Geralmente num_cols seria igual a num_linhas+1
+        self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1
 
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio)
         self.matrix_data = []
@@ -27,7 +28,7 @@ class MatrixApp(QWidget):
     def setup_ui(self):
         main_layout = QVBoxLayout(self) #Empilha verticalmente os elementos
 
-        label_matrix_a = QLabel("Matriz A:")
+        label_matrix_a = QLabel("Solucionador de sistema linear")
         label_matrix_a.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label_matrix_a)
 
@@ -52,6 +53,19 @@ class MatrixApp(QWidget):
 
         control_buttons_layout.addStretch(1) #Ajuda a centralizar os botões, é parecido com um spacer() do swift
         main_layout.addLayout(control_buttons_layout)
+
+        resize_row = QHBoxLayout(self)
+        resize_row.addStretch(1)
+        resize_button = QPushButton("Resize")
+        resize_button.clicked.connect(self.resize_matrix)
+        self.resize_input = QLineEdit(self)
+        self.resize_input.setPlaceholderText("Número de variáveis")
+        resize_row.addWidget(resize_button)
+        resize_row.addWidget(self.resize_input)
+        resize_row.addStretch(1)
+
+        main_layout.addStretch(1)
+        main_layout.addLayout(resize_row)
 
         main_layout.addStretch(1)
 
@@ -98,7 +112,7 @@ class MatrixApp(QWidget):
         # Copia os valores antigos da matriz de dados (se existirem)
         if self.matrix_data:
             # Pega o menor tamanho entre o antigo e o novo para evitar erros
-            rows_to_copy = min(len(self.matrix_data), self.num_rows-1)
+            rows_to_copy = min(len(self.matrix_data), self.num_rows-1) #Retira 1 porque a 1ª é apenas para variáveis
             cols_to_copy = min(len(self.matrix_data[0]), self.num_cols) #len(self.matrix_data[0]) é o número de colunas
             print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
             print(self.matrix_data)
@@ -141,15 +155,18 @@ class MatrixApp(QWidget):
 
     def increase_dimensions(self):
         """Aumenta as dimensões e reconstrói a UI preservando os dados."""
-        # 1. Salva os valores atuais da UI no self.matrix_data
-        self.sync_data_from_ui()
+        if self.num_rows <= self.MAX_VARIABLES:
+            # 1. Salva os valores atuais da UI no self.matrix_data
+            self.sync_data_from_ui()
 
-        # 2. Aumenta as dimensões
-        self.num_rows += 1
-        self.num_cols += 1
+            # 2. Aumenta as dimensões
+            self.num_rows += 1
+            self.num_cols += 1
 
-        # 3. Reconstrói a UI (a função agora sabe como preservar os dados)
-        self.rebuild_matrix_ui()
+            # 3. Reconstrói a UI (a função agora sabe como preservar os dados)
+            self.rebuild_matrix_ui()
+        else:
+            print("Não é possível aumentar mais as dimensões da matriz.")
 
     def decrease_dimensions(self):
         """Diminui as dimensões e reconstrói a UI (descartando dados)."""
@@ -169,6 +186,20 @@ class MatrixApp(QWidget):
         else:
             print("Não é possível diminuir mais as dimensões da matriz.")
 
+    def resize_matrix(self):
+        try:
+            numero_variaveis = int(self.resize_input.text())
+        except ValueError:
+            QMessageBox.critical(self,"Erro","Você não digitou um inteiro")
+            return
+        if numero_variaveis <= 0:
+            QMessageBox.critical(self, "Erro", "Você digitou um número menor ou igual a 0")
+        elif numero_variaveis > self.MAX_VARIABLES:
+            QMessageBox.critical(self, "Erro", "Você digitou um número muito grande")
+        else:
+            self.num_rows = self.num_cols = numero_variaveis+1
+            self.sync_data_from_ui()
+            self.rebuild_matrix_ui()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
