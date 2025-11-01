@@ -72,12 +72,13 @@ class MatrixApp(QWidget):
     def sync_data_from_ui(self):
         # Salva os valores da UI (QLineEdit) no modelo de dados (self.matrix_data).
         if not self.matrix_widgets:  # Se a UI ainda não foi criada
+            print("Matrix_widgets nao foi criada")
             return
 
         # Atualiza self.matrix_data com os valores dos QLineEdit
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
-                self.matrix_data[row+1][col] = self.matrix_widgets[row][col].text()
+                self.matrix_data[row][col] = self.matrix_widgets[row][col].text()
         print("Matrix data agora eh:")
         print(self.matrix_data)
 
@@ -87,7 +88,7 @@ class MatrixApp(QWidget):
 
         # --- 1. Atualiza o Modelo de Dados ---
         # Cria uma nova matriz de dados (lista de listas) com as novas dimensões
-        new_data = [["0"] * self.num_cols for _ in range(self.num_rows)]
+        new_data = [["0"] * self.num_cols for _ in range(self.num_rows-1)]
 
         #print("\nNew data eh:")
         #print(new_data)
@@ -97,13 +98,15 @@ class MatrixApp(QWidget):
         # Copia os valores antigos da matriz de dados (se existirem)
         if self.matrix_data:
             # Pega o menor tamanho entre o antigo e o novo para evitar erros
-            rows_to_copy = min(len(self.matrix_data), self.num_rows)
+            rows_to_copy = min(len(self.matrix_data), self.num_rows-1)
             cols_to_copy = min(len(self.matrix_data[0]), self.num_cols) #len(self.matrix_data[0]) é o número de colunas
-
+            print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
+            print(self.matrix_data)
             for row in range(rows_to_copy):
                 for col in range(cols_to_copy):
                     new_data[row][col] = self.matrix_data[row][col]
         #matrix_data é uma matriz de strings
+        #new_data.pop(0)
         self.matrix_data = new_data  # O modelo de dados agora está atualizado
 
         print("\nNew data eh:")
@@ -127,7 +130,7 @@ class MatrixApp(QWidget):
                 line_edit.setAlignment(Qt.AlignCenter)
 
                 # Preenche o QLineEdit com o valor do nosso modelo de dados
-                line_edit.setText(str(self.matrix_data[row][col]))
+                line_edit.setText(str(self.matrix_data[row-1][col]))
                 #Coloca LineEdit em sua posição na grid
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)  # Adiciona à lista da linha
