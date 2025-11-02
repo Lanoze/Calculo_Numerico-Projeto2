@@ -1,3 +1,4 @@
+from metodos import eliminacao_gauss # Importa o método de cálculo.
 import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
@@ -20,8 +21,9 @@ class MatrixApp(QWidget):
         self.setWindowTitle("Solucionador de Sistema Linear")
         self.setGeometry(100, 100, 400, 300)
 
-        self.num_rows = 2 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
-        self.num_cols = 2 #Geralmente num_cols seria igual a num_linhas+1
+        # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
+        self.num_rows = 4 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
+        self.num_cols = 4 #Geralmente num_cols seria igual a num_linhas+1
         self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
 
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
@@ -61,7 +63,8 @@ class MatrixApp(QWidget):
         control_buttons_layout.addStretch(1) #Ajuda a centralizar os botões, é parecido com um spacer() do swift
         main_layout.addLayout(control_buttons_layout)
 
-        resize_row = QHBoxLayout(self)
+        # ### MUDANÇA FUNCIONAL: Remove 'self' para corrigir o aviso QLayout
+        resize_row = QHBoxLayout()
         resize_row.addStretch(1)
         resize_button = QPushButton("Resize")
         resize_button.clicked.connect(self.resize_matrix)
@@ -71,7 +74,8 @@ class MatrixApp(QWidget):
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
 
-        calculo_row = QHBoxLayout(self)
+        # ### MUDANÇA FUNCIONAL: Remove 'self' para corrigir o aviso QLayout
+        calculo_row = QHBoxLayout()
         calculo_row.addStretch(1)
         self.menu_opcoes = QComboBox()
         self.menu_opcoes.addItems(["Gauss","Jordan","LU","Jacobi","Gauss-Siedel"])
@@ -117,10 +121,10 @@ class MatrixApp(QWidget):
     
                             QComboBox {
                             border: 1px solid #555;      /* Borda cinza escura */
-                            border-radius: 5px;         /* Cantos arredondados */
-                            padding: 5px 10px;          /* Espaçamento interno (vertical, horizontal) */
+                            border-radius: 5px;          /* Cantos arredondados */
+                            padding: 5px 10px;           /* Espaçamento interno (vertical, horizontal) */
                             background-color: #5B92A8;   /* Fundo azul */
-                            color: black;               /* Texto preto */
+                            color: black;                /* Texto preto */
                             font-size: 14px;
                             min-width: 95px;
                             }
@@ -160,8 +164,8 @@ class MatrixApp(QWidget):
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
                 self.matrix_data[row][col] = self.matrix_widgets[row][col].text()
-        # print("Matrix data agora eh:")
-        # print(self.matrix_data)
+        print("Matrix data agora eh:")
+        print(self.matrix_data)
 
     #Preciso atualizar isso pra aparecer X0,X1 etc no topo da matriz
     def rebuild_matrix_ui(self):
@@ -171,8 +175,8 @@ class MatrixApp(QWidget):
         # Cria uma nova matriz de dados (lista de listas) com as novas dimensões
         new_data = [["0"] * self.num_cols for _ in range(self.num_rows-1)]
 
-        #print("\nNew data eh:")
-        #print(new_data)
+        # ### LINHA REMOVIDA: print("\nNew data eh:")
+        # ### LINHA REMOVIDA: print(new_data)
         #row_X_label = [] #Uma lista de QLabel
 
 
@@ -181,8 +185,8 @@ class MatrixApp(QWidget):
             # Pega o menor tamanho entre o antigo e o novo para evitar erros
             rows_to_copy = min(len(self.matrix_data), self.num_rows-1) #Retira 1 porque a 1ª é apenas para variáveis
             cols_to_copy = min(len(self.matrix_data[0]), self.num_cols) #len(self.matrix_data[0]) é o número de colunas
-            # print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
-            # print(self.matrix_data)
+            # ### LINHA REMOVIDA: print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
+            # ### LINHA REMOVIDA: print(self.matrix_data)
             for row in range(rows_to_copy):
                 for col in range(cols_to_copy):
                     new_data[row][col] = self.matrix_data[row][col]
@@ -190,17 +194,25 @@ class MatrixApp(QWidget):
         #new_data.pop(0)
         self.matrix_data = new_data  # O modelo de dados agora está atualizado
 
-        # print("\nself.matrix_data eh:")
-        # print(self.matrix_data)
+        # ### LINHA REMOVIDA: print("\nself.matrix_data eh:")
+        # ### LINHA REMOVIDA: print(self.matrix_data)
+        
         # --- 2. Limpa a UI Antiga ---
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = []  # Limpa a lista de referências de widgets
 
+        # Adiciona Labels das Variáveis (X1, X2, ...)
         for i in range(self.num_cols-1): #-1 por que o termo independente não é variável
-            new_variable = QLabel(f"X{i}")
+            # ### MUDANÇA FUNCIONAL: Altera X{i} para X{i+1} para começar em X1
+            new_variable = QLabel(f"X{i+1}")
             new_variable.setAlignment(Qt.AlignCenter)
             #new_variable.setFixedSize(50, 30)
             self.matrix_grid_layout.addWidget(new_variable, 0, i)
+
+        # ### MUDANÇA FUNCIONAL: Adiciona o Label do Termo Independente (B)
+        label_b = QLabel("B")
+        label_b.setAlignment(Qt.AlignCenter)
+        self.matrix_grid_layout.addWidget(label_b, 0, self.num_cols - 1)
 
         # --- 3. Recria a UI com os Dados Atualizados ---
         for row in range(1,self.num_rows):
@@ -219,12 +231,12 @@ class MatrixApp(QWidget):
             self.matrix_widgets.append(row_widgets)  # Adiciona a linha à matriz de widgets
 
         self.matrix_grid_layout.setAlignment(Qt.AlignCenter)
-        # print("\nself.matrix_data no final eh:")
-        # print(self.matrix_data)
+        # ### LINHA REMOVIDA: print("\nself.matrix_data no final eh:")
+        # ### LINHA REMOVIDA: print(self.matrix_data)
 
     def increase_dimensions(self):
         """Aumenta as dimensões e reconstrói a UI preservando os dados."""
-        if self.num_rows <= self.MAX_VARIABLES:
+        if (self.num_rows - 1) < self.MAX_VARIABLES:
             # 1. Salva os valores atuais da UI no self.matrix_data
             self.sync_data_from_ui()
 
@@ -235,7 +247,8 @@ class MatrixApp(QWidget):
             # 3. Reconstrói a UI (a função agora sabe como preservar os dados)
             self.rebuild_matrix_ui()
         else:
-            print("Não é possível aumentar mais as dimensões da matriz.")
+            # ### MUDANÇA FUNCIONAL: Usando QMessageBox para erro (melhor UX no GUI)
+            QMessageBox.critical(self,"Erro","Não é possível aumentar mais as dimensões da matriz.")
 
     def decrease_dimensions(self):
         """Diminui as dimensões e reconstrói a UI (descartando dados)."""
@@ -253,7 +266,8 @@ class MatrixApp(QWidget):
             # ao copiar os dados antigos para a nova matriz menor.
             self.rebuild_matrix_ui()
         else:
-            print("Não é possível diminuir mais as dimensões da matriz.")
+            # ### MUDANÇA FUNCIONAL: Usando QMessageBox para erro (melhor UX no GUI)
+            QMessageBox.critical(self,"Erro","Não é possível diminuir mais as dimensões da matriz.")
 
     def resize_matrix(self):
         try:
@@ -272,19 +286,60 @@ class MatrixApp(QWidget):
 
     def calcular(self):
         sistema = []
+        # 1. Coleta os dados da UI, convertendo para float
         for row in range(len(self.matrix_widgets)):
             linha = []
             for col in range(len(self.matrix_widgets[row])):
                 try:
-                    linha.append(float(self.matrix_widgets[row][col].text()))
+                    # ### MUDANÇA FUNCIONAL: Permite input com vírgula (,) ou ponto (.)
+                    text_value = self.matrix_widgets[row][col].text().replace(',', '.')
+                    linha.append(float(text_value))
                 except ValueError:
-                    QMessageBox.critical(self, "Erro", "Valor inválido na matriz")
+                    # ### MUDANÇA FUNCIONAL: Mensagem de erro mais detalhada
+                    QMessageBox.critical(self, "Erro", f"Valor inválido na matriz na posição [{row+1},{col+1}].")
                     return
             sistema.append(linha)
 
         print(f"\nVocê selecionou o método {self.menu_opcoes.currentText()}, e o sistema ficou:")
         print(sistema)
-        #exibir_sistema(sistema)
+        # exibir_sistema(sistema) # Print de debug original
+
+        # ### MUDANÇA FUNCIONAL: Adição da Lógica de Cálculo
+        metodo_selecionado = self.menu_opcoes.currentText()
+        resultado = None
+
+        if metodo_selecionado == "Gauss": 
+            # Verifica se é um sistema quadrado (N variáveis e N equações)
+            if self.num_rows - 1 != self.num_cols - 1:
+                QMessageBox.critical(self, "Erro", "Eliminação de Gauss requer um sistema quadrado (N equações e N variáveis).")
+                return
+            
+            # CHAMA A FUNÇÃO CORRIGIDA NO metodos.py
+            resultado = eliminacao_gauss(sistema) 
+            
+        elif metodo_selecionado in ["Jordan", "LU", "Jacobi", "Gauss-Siedel"]:
+            QMessageBox.information(self, "Aviso", f"Método de {metodo_selecionado} ainda não implementado.")
+            
+        # 3. Exibição do Resultado
+        if resultado is not None:
+            if isinstance(resultado, str): # Se a função retornou uma mensagem de erro (string)
+                QMessageBox.critical(self, "Erro de Cálculo", resultado)
+            else: # Se retornou o vetor solução (lista de floats)
+                mensagem_solucao = f"Solução encontrada pelo método {metodo_selecionado}:\n"
+                
+                # Nomeando as variáveis. Se for 3x3 (o caso das minas), usa Mina 1, 2, 3.
+                if len(resultado) == 3:
+                    variaveis = [f"X{i+1} (Mina {i+1})" for i in range(len(resultado))]
+                else:
+                    variaveis = [f"X{i+1}" for i in range(len(resultado))]
+
+                for i, valor in enumerate(resultado):
+                    nome = variaveis[i]
+                    # Formata o resultado para 4 casas decimais e adiciona m³
+                    mensagem_solucao += f"{nome}: {valor:.4f} m³\n" 
+                    
+                QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
