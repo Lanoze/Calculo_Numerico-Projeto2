@@ -1,10 +1,18 @@
 import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox
+    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox
 )
 from PySide6.QtCore import Qt
 
+#Talvez devesse criar um arquivo só pra funções auxiliares
+# def exibir_sistema(sistema):
+#     print('')
+#     for linha in range(len(sistema)):
+#         for coluna in range(len(sistema[0])-1):
+#             valor_atual = sistema[linha][coluna]
+#             print(f"{valor_atual}*X{coluna}",end='  ')
+#         print(f"= {sistema[linha][len(sistema[0])-1]}")
 
 class MatrixApp(QWidget):
     def __init__(self):
@@ -14,9 +22,9 @@ class MatrixApp(QWidget):
 
         self.num_rows = 2 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
         self.num_cols = 2 #Geralmente num_cols seria igual a num_linhas+1
-        self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1
+        self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
 
-        # 1. Nosso modelo de dados para armazenar os valores (começa vazio)
+        # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
         self.matrix_data = []
         # Manter uma referência aos widgets para fácil acesso
         self.matrix_widgets = []
@@ -66,13 +74,24 @@ class MatrixApp(QWidget):
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
 
-        main_layout.addStretch(1)
-        main_layout.addLayout(resize_row)
+        calculo_row = QHBoxLayout(self)
+        calculo_row.addStretch(1)
+        self.menu_opcoes = QComboBox()
+        self.menu_opcoes.addItems(["Gauss","Jordan","LU","Jacobi","Gauss-Siedel"])
+        calculo_botao = QPushButton("Calcular")
+        calculo_botao.clicked.connect(self.calcular)
+        calculo_row.addWidget(self.menu_opcoes)
+        calculo_row.addWidget(calculo_botao)
+        calculo_row.addStretch(1)
 
         main_layout.addStretch(1)
-        # Css pra mudar a aparência
+        main_layout.addLayout(resize_row)
+        main_layout.addLayout(calculo_row)
+
+        main_layout.addStretch(1)
+        # Css pra mudar a aparência (QSS sendo mais específico)
         estilo='''
-        
+
                 QPushButton{
                 font-size: 15px;
                 background-color: #5B92A8
@@ -80,7 +99,7 @@ class MatrixApp(QWidget):
                 QPushButton:hover{
                 background-color: #4D7C94
                 }
-                
+
                 QPushButton#Aumentar{
                 font-size: 30px;
                 background-color: #4CAF50; /* Verde */
@@ -88,7 +107,7 @@ class MatrixApp(QWidget):
                 QPushButton#Aumentar:hover{
                 background-color: #429945; /* Verde mais escuro */
                 }
-                
+
                 QPushButton#Diminuir{
                 font-size: 30px;
                 background-color: #f44336
@@ -96,7 +115,7 @@ class MatrixApp(QWidget):
                 QPushButton#Diminuir:hover{
                 background-color: #C23129
                 }
-                
+
                 MatrixApp{
                 background-color: #A6C0ED
                 }
@@ -130,8 +149,8 @@ class MatrixApp(QWidget):
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
                 self.matrix_data[row][col] = self.matrix_widgets[row][col].text()
-        print("Matrix data agora eh:")
-        print(self.matrix_data)
+        # print("Matrix data agora eh:")
+        # print(self.matrix_data)
 
     #Preciso atualizar isso pra aparecer X0,X1 etc no topo da matriz
     def rebuild_matrix_ui(self):
@@ -151,8 +170,8 @@ class MatrixApp(QWidget):
             # Pega o menor tamanho entre o antigo e o novo para evitar erros
             rows_to_copy = min(len(self.matrix_data), self.num_rows-1) #Retira 1 porque a 1ª é apenas para variáveis
             cols_to_copy = min(len(self.matrix_data[0]), self.num_cols) #len(self.matrix_data[0]) é o número de colunas
-            print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
-            print(self.matrix_data)
+            # print(f"\nRows to copy eh {rows_to_copy}, cols to copy eh {cols_to_copy}, Matrix data antes eh:")
+            # print(self.matrix_data)
             for row in range(rows_to_copy):
                 for col in range(cols_to_copy):
                     new_data[row][col] = self.matrix_data[row][col]
@@ -160,8 +179,8 @@ class MatrixApp(QWidget):
         #new_data.pop(0)
         self.matrix_data = new_data  # O modelo de dados agora está atualizado
 
-        print("\nNew data eh:")
-        print(new_data)
+        # print("\nself.matrix_data eh:")
+        # print(self.matrix_data)
         # --- 2. Limpa a UI Antiga ---
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = []  # Limpa a lista de referências de widgets
@@ -189,6 +208,8 @@ class MatrixApp(QWidget):
             self.matrix_widgets.append(row_widgets)  # Adiciona a linha à matriz de widgets
 
         self.matrix_grid_layout.setAlignment(Qt.AlignCenter)
+        # print("\nself.matrix_data no final eh:")
+        # print(self.matrix_data)
 
     def increase_dimensions(self):
         """Aumenta as dimensões e reconstrói a UI preservando os dados."""
@@ -237,6 +258,22 @@ class MatrixApp(QWidget):
             self.num_rows = self.num_cols = numero_variaveis+1
             self.sync_data_from_ui()
             self.rebuild_matrix_ui()
+
+    def calcular(self):
+        sistema = []
+        for row in range(len(self.matrix_widgets)):
+            linha = []
+            for col in range(len(self.matrix_widgets[row])):
+                try:
+                    linha.append(float(self.matrix_widgets[row][col].text()))
+                except ValueError:
+                    QMessageBox.critical(self, "Erro", "Valor inválido na matriz")
+                    return
+            sistema.append(linha)
+
+        print(f"\nVocê selecionou o método {self.menu_opcoes.currentText()}, e o sistema ficou:")
+        print(sistema)
+        #exibir_sistema(sistema)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
