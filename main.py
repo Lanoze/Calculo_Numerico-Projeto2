@@ -72,6 +72,15 @@ class MatrixApp(QWidget):
         main_layout.addStretch(1)
         # Css pra mudar a aparência
         estilo='''
+        
+                QPushButton{
+                font-size: 15px;
+                background-color: #5B92A8
+                }
+                QPushButton:hover{
+                background-color: #4D7C94
+                }
+                
                 QPushButton#Aumentar{
                 font-size: 30px;
                 background-color: #4CAF50; /* Verde */
@@ -79,6 +88,7 @@ class MatrixApp(QWidget):
                 QPushButton#Aumentar:hover{
                 background-color: #429945; /* Verde mais escuro */
                 }
+                
                 QPushButton#Diminuir{
                 font-size: 30px;
                 background-color: #f44336
@@ -86,7 +96,11 @@ class MatrixApp(QWidget):
                 QPushButton#Diminuir:hover{
                 background-color: #C23129
                 }
+                
                 MatrixApp{
+                background-color: #A6C0ED
+                }
+                QMessageBox{
                 background-color: #A6C0ED
                 }
         '''
