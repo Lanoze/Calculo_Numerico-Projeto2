@@ -17,7 +17,7 @@ from PySide6.QtCore import Qt
 class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Editor de Matriz")
+        self.setWindowTitle("Solucionador de Sistema Linear")
         self.setGeometry(100, 100, 400, 300)
 
         self.num_rows = 2 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
@@ -41,10 +41,7 @@ class MatrixApp(QWidget):
         main_layout.addWidget(label_matrix_a)
 
         self.matrix_grid_layout = QGridLayout()
-        self.matrix_container = QWidget()
-        self.matrix_container.setLayout(self.matrix_grid_layout) #setLayout geralmente é usado pra janela principal
-
-        main_layout.addWidget(self.matrix_container,stretch=1) #stretch=1 deixa a matriz mais distante do label
+        main_layout.addLayout(self.matrix_grid_layout,stretch=1) #stretch=1 deixa a matriz mais distante do label
 
         control_buttons_layout = QHBoxLayout() #Os botões aparecem horizontalmente
         control_buttons_layout.addStretch(1) #Adiciona inicialmente um espaço antes, e depois um no final
@@ -90,56 +87,54 @@ class MatrixApp(QWidget):
 
         main_layout.addStretch(1)
         # Css pra mudar a aparência (QSS sendo mais específico)
-        estilo='''
-
-                QPushButton{
-                font-size: 15px;
-                background-color: #5B92A8
-                }
-                QPushButton:hover{
-                background-color: #4D7C94
-                }
-                QPushButton:focus {
-                outline: none;
-                }
-
-                QPushButton#Aumentar{
-                font-size: 30px;
-                background-color: #4CAF50; /* Verde */
-                }
-                QPushButton#Aumentar:hover{
-                background-color: #429945; /* Verde mais escuro */
-                }
-
-                QPushButton#Diminuir{
-                font-size: 30px;
-                background-color: #f44336
-                }
-                QPushButton#Diminuir:hover{
-                background-color: #C23129
-                }
-                
-                QComboBox {
-                border: 1px solid #555;      /* Borda cinza escura */
-                border-radius: 5px;         /* Cantos arredondados */
-                padding: 5px 10px;          /* Espaçamento interno (vertical, horizontal) */
-                background-color: #5B92A8;   /* Fundo azul */
-                color: black;               /* Texto preto */
-                font-size: 14px;
-                min-width: 95px;
-                }
-                QComboBox:focus {
-                outline: none;
-                }
-
-                MatrixApp{
-                background-color: #A6C0ED
-                }
-                QMessageBox{
-                background-color: #A6C0ED
-                }
-        '''
-        self.setStyleSheet(estilo)
+        self.setStyleSheet('''
+                            QPushButton{
+                            font-size: 15px;
+                            background-color: #5B92A8
+                            }
+                            QPushButton:hover{
+                            background-color: #4D7C94
+                            }
+                            QPushButton:focus {
+                            outline: none;
+                            }
+    
+                            QPushButton#Aumentar{
+                            font-size: 30px;
+                            background-color: #4CAF50; /* Verde */
+                            }
+                            QPushButton#Aumentar:hover{
+                            background-color: #429945; /* Verde mais escuro */
+                            }
+    
+                            QPushButton#Diminuir{
+                            font-size: 30px;
+                            background-color: #f44336
+                            }
+                            QPushButton#Diminuir:hover{
+                            background-color: #C23129
+                            }
+    
+                            QComboBox {
+                            border: 1px solid #555;      /* Borda cinza escura */
+                            border-radius: 5px;         /* Cantos arredondados */
+                            padding: 5px 10px;          /* Espaçamento interno (vertical, horizontal) */
+                            background-color: #5B92A8;   /* Fundo azul */
+                            color: black;               /* Texto preto */
+                            font-size: 14px;
+                            min-width: 95px;
+                            }
+                            QComboBox:focus {
+                            outline: none;
+                            }
+    
+                            MatrixApp{
+                            background-color: #A6C0ED
+                            }
+                            QMessageBox{
+                            background-color: #A6C0ED
+                            }
+                    ''')
 
     def clear_layout(self, layout):
         """Limpa todos os widgets de um layout."""
