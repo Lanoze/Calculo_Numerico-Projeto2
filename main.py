@@ -43,11 +43,13 @@ class MatrixApp(QWidget):
 
         btn_add = QPushButton("+")
         btn_add.setFixedSize(40, 40)
+        btn_add.setObjectName("Aumentar")
         btn_add.clicked.connect(self.increase_dimensions)
         control_buttons_layout.addWidget(btn_add)
 
         btn_subtract = QPushButton("-")
         btn_subtract.setFixedSize(40, 40)
+        btn_subtract.setObjectName("Diminuir")
         btn_subtract.clicked.connect(self.decrease_dimensions)
         control_buttons_layout.addWidget(btn_subtract)
 
@@ -68,6 +70,27 @@ class MatrixApp(QWidget):
         main_layout.addLayout(resize_row)
 
         main_layout.addStretch(1)
+        # Css pra mudar a aparência
+        estilo='''
+                QPushButton#Aumentar{
+                font-size: 30px;
+                background-color: #4CAF50; /* Verde */
+                }
+                QPushButton#Aumentar:hover{
+                background-color: #429945; /* Verde mais escuro */
+                }
+                QPushButton#Diminuir{
+                font-size: 30px;
+                background-color: #f44336
+                }
+                QPushButton#Diminuir:hover{
+                background-color: #C23129
+                }
+                MatrixApp{
+                background-color: #A6C0ED
+                }
+        '''
+        self.setStyleSheet(estilo)
 
     def clear_layout(self, layout):
         """Limpa todos os widgets de um layout."""
