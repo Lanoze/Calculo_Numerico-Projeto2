@@ -90,6 +90,11 @@ class MatrixApp(QWidget):
 
         main_layout.addStretch(1)
         # Css pra mudar a aparência (QSS sendo mais específico)
+
+        #  QComboBox
+        # {
+        #  background - color:  # 5B92A8
+        # }
         estilo='''
 
                 QPushButton{
@@ -114,6 +119,18 @@ class MatrixApp(QWidget):
                 }
                 QPushButton#Diminuir:hover{
                 background-color: #C23129
+                }
+                
+                QComboBox {
+                border: 1px solid #555;      /* Borda cinza escura */
+                border-radius: 5px;         /* Cantos arredondados */
+                padding: 5px 10px;          /* Espaçamento interno (vertical, horizontal) */
+                background-color: #5B92A8;   /* Fundo azul */
+                color: black;               /* Texto preto */
+                font-size: 14px;
+                }
+                QComboBox:focus {
+                outline: none;
                 }
 
                 MatrixApp{
