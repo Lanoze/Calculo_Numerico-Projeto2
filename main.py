@@ -90,11 +90,6 @@ class MatrixApp(QWidget):
 
         main_layout.addStretch(1)
         # Css pra mudar a aparência (QSS sendo mais específico)
-
-        #  QComboBox
-        # {
-        #  background - color:  # 5B92A8
-        # }
         estilo='''
 
                 QPushButton{
@@ -103,6 +98,9 @@ class MatrixApp(QWidget):
                 }
                 QPushButton:hover{
                 background-color: #4D7C94
+                }
+                QPushButton:focus {
+                outline: none;
                 }
 
                 QPushButton#Aumentar{
@@ -128,6 +126,7 @@ class MatrixApp(QWidget):
                 background-color: #5B92A8;   /* Fundo azul */
                 color: black;               /* Texto preto */
                 font-size: 14px;
+                min-width: 95px;
                 }
                 QComboBox:focus {
                 outline: none;
