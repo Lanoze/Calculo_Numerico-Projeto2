@@ -22,8 +22,8 @@ class MatrixApp(QWidget):
         self.setGeometry(100, 100, 400, 300)
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
-        self.num_rows = 4 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
-        self.num_cols = 4 #Geralmente num_cols seria igual a num_linhas+1
+        self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
+        self.num_cols = 3 #Geralmente num_cols seria igual a num_linhas+1
         self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
 
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
@@ -164,8 +164,8 @@ class MatrixApp(QWidget):
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
                 self.matrix_data[row][col] = self.matrix_widgets[row][col].text()
-        print("Matrix data agora eh:")
-        print(self.matrix_data)
+        # print("Matrix data agora eh:")
+        # print(self.matrix_data)
 
     #Preciso atualizar isso pra aparecer X0,X1 etc no topo da matriz
     def rebuild_matrix_ui(self):
@@ -248,7 +248,8 @@ class MatrixApp(QWidget):
             self.rebuild_matrix_ui()
         else:
             # ### MUDANÇA FUNCIONAL: Usando QMessageBox para erro (melhor UX no GUI)
-            QMessageBox.critical(self,"Erro","Não é possível aumentar mais as dimensões da matriz.")
+            #QMessageBox.critical(self,"Erro","Não é possível aumentar mais as dimensões da matriz.")
+            print("Não é possível aumentar mais as dimensões da matriz.")
 
     def decrease_dimensions(self):
         """Diminui as dimensões e reconstrói a UI (descartando dados)."""
@@ -267,7 +268,8 @@ class MatrixApp(QWidget):
             self.rebuild_matrix_ui()
         else:
             # ### MUDANÇA FUNCIONAL: Usando QMessageBox para erro (melhor UX no GUI)
-            QMessageBox.critical(self,"Erro","Não é possível diminuir mais as dimensões da matriz.")
+            #QMessageBox.critical(self,"Erro","Não é possível diminuir mais as dimensões da matriz.")
+            print("Não é possível diminuir mais as dimensões da matriz.")
 
     def resize_matrix(self):
         try:
@@ -333,14 +335,11 @@ class MatrixApp(QWidget):
                 QMessageBox.critical(self, "Erro de Cálculo", resultado)
             else:
                 mensagem_solucao = f"Solução encontrada pelo método {metodo_selecionado}:\n"
-                if len(resultado) == 3:
-                    variaveis = [f"X{i+1} (Mina {i+1})" for i in range(len(resultado))]
-                else:
-                    variaveis = [f"X{i+1}" for i in range(len(resultado))]
+                variaveis = [f"X{i+1}" for i in range(len(resultado))]
 
                 for i, valor in enumerate(resultado):
                     nome = variaveis[i]
-                    mensagem_solucao += f"{nome}: {valor:.4f} m³\n" 
+                    mensagem_solucao += f"{nome}: {valor:.4f}\n"
                     
                 QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
 
