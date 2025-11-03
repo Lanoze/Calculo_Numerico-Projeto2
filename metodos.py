@@ -132,3 +132,95 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6):
 
     # Se não convergiu
     return "Aviso: método de Gauss-Seidel não convergiu dentro do número máximo de iterações."
+
+
+# ---- Implementando a interpolação de Lagrange ---- #
+
+
+def interpolacao_lagrange(X, Y, x_interpolar):
+    """
+    Calcula o valor interpolado P(x_interpolar) usando o método de Lagrange.
+    
+    Args:
+        X (list): Lista de coordenadas x dos pontos de dados.
+        Y (list): Lista de coordenadas y dos pontos de dados.
+        x_interpolar (float): O ponto x no qual se deseja interpolar.
+
+    Returns:
+        float or str: O valor interpolado P(x_interpolar), ou uma string de erro.
+    """
+    n = len(X)
+    
+    if n != len(Y):
+        return "Erro: As listas de X e Y devem ter o mesmo número de pontos."
+
+    P_x = 0.0 # O valor final do polinômio P(x)
+    
+    # Soma dos termos y_i * L_i(x)
+    for i in range(n):
+        L_i_x = 1.0 # Inicializa o Polinômio Base de Lagrange L_i(x)
+        
+        # Cálculo do produtório de L_i(x)
+        for j in range(n):
+            if i != j:
+                denominador = X[i] - X[j]
+                if denominador == 0:
+                    return f"Erro: Coordenada X repetida em X[{i}] e X[{j}]. Não é possível interpolar."
+                
+                # Multiplica os termos: (x - x_j) / (x_i - x_j)
+                L_i_x *= (x_interpolar - X[j]) / denominador
+        
+        # Adiciona o termo ao polinômio total: L_i(x) * y_i
+        P_x += L_i_x * Y[i]
+        
+    return P_x
+
+
+# ---- Implemenatndo a interpolação de Newton (diferenças divididas) ---- #
+
+def interpolacao_newton(X, Y, x_interpolar):
+    """
+    Calcula o valor interpolado P(x_interpolar) usando o método de Newton
+    (Diferenças Divididas).
+    
+    Args:
+        X (list): Lista de coordenadas x dos pontos de dados.
+        Y (list): Lista de coordenadas y dos pontos de dados.
+        x_interpolar (float): O ponto x no qual se deseja interpolar.
+
+    Returns:
+        float or str: O valor interpolado P(x_interpolar), ou uma string de erro.
+    """
+    n = len(X)
+    
+    if n != len(Y):
+        return "Erro: As listas de X e Y devem ter o mesmo número de pontos."
+
+    # 1. Cria a Tabela de Diferenças Divididas (coeficientes)
+    coeficientes = list(Y) 
+    
+    try:
+        for j in range(1, n): # Colunas da tabela
+            for i in range(n - 1, j - 1, -1): # Linhas para calcular os novos termos
+                denominador = X[i] - X[i - j]
+                if denominador == 0:
+                    return f"Erro: Coordenada X repetida em X[{i}] e X[{i - j}]. Não é possível interpolar."
+
+                # Cálculo da Diferença Dividida e atualização
+                coeficientes[i] = (coeficientes[i] - coeficientes[i - 1]) / denominador
+                
+    except Exception as e:
+        return f"Erro no cálculo das Diferenças Divididas: {e}"
+
+    # 2. Avaliação do Polinômio de Newton (P(x) = b0 + b1(x-x0) + b2(x-x0)(x-x1) + ...)
+    P_x = coeficientes[0] # b0 = f[x0]
+    termo_produtorio = 1.0
+
+    for i in range(1, n):
+        # Atualiza o produtório: (x - x0)...(x - x_i-1)
+        termo_produtorio *= (x_interpolar - X[i - 1])
+        
+        # Adiciona o próximo termo: b_i * (produtório)
+        P_x += coeficientes[i] * termo_produtorio
+        
+    return P_x
