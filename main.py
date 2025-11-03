@@ -291,43 +291,48 @@ class MatrixApp(QWidget):
             linha = []
             for col in range(len(self.matrix_widgets[row])):
                 try:
-                    # ### MUDANÇA FUNCIONAL: Permite input com vírgula (,) ou ponto (.)
                     text_value = self.matrix_widgets[row][col].text().replace(',', '.')
                     linha.append(float(text_value))
                 except ValueError:
-                    # ### MUDANÇA FUNCIONAL: Mensagem de erro mais detalhada
                     QMessageBox.critical(self, "Erro", f"Valor inválido na matriz na posição [{row+1},{col+1}].")
                     return
             sistema.append(linha)
 
         print(f"\nVocê selecionou o método {self.menu_opcoes.currentText()}, e o sistema ficou:")
         print(sistema)
-        # exibir_sistema(sistema) # Print de debug original
 
-        # ### MUDANÇA FUNCIONAL: Adição da Lógica de Cálculo
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
 
         if metodo_selecionado == "Gauss": 
-            # Verifica se é um sistema quadrado (N variáveis e N equações)
             if self.num_rows - 1 != self.num_cols - 1:
                 QMessageBox.critical(self, "Erro", "Eliminação de Gauss requer um sistema quadrado (N equações e N variáveis).")
                 return
-            
-            # CHAMA A FUNÇÃO CORRIGIDA NO metodos.py
             resultado = eliminacao_gauss(sistema) 
             
-        elif metodo_selecionado in ["Jordan", "LU", "Jacobi", "Gauss-Siedel"]:
-            QMessageBox.information(self, "Aviso", f"Método de {metodo_selecionado} ainda não implementado.")
-            
+        elif metodo_selecionado == "Jordan":
+            QMessageBox.information(self, "Aviso", "Método de Jordan ainda não implementado.")
+        
+        elif metodo_selecionado == "LU":
+            QMessageBox.information(self, "Aviso", "Método de LU ainda não implementado.")
+
+        elif metodo_selecionado == "Jacobi":
+            QMessageBox.information(self, "Aviso", "Método de Jacobi ainda não implementado.")
+
+        elif metodo_selecionado == "Gauss-Siedel":
+            try:
+                from metodos import gauss_seidel
+                resultado = gauss_seidel(sistema)
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Falha ao executar Gauss-Seidel: {e}")
+                return
+
         # 3. Exibição do Resultado
         if resultado is not None:
-            if isinstance(resultado, str): # Se a função retornou uma mensagem de erro (string)
+            if isinstance(resultado, str):
                 QMessageBox.critical(self, "Erro de Cálculo", resultado)
-            else: # Se retornou o vetor solução (lista de floats)
+            else:
                 mensagem_solucao = f"Solução encontrada pelo método {metodo_selecionado}:\n"
-                
-                # Nomeando as variáveis. Se for 3x3 (o caso das minas), usa Mina 1, 2, 3.
                 if len(resultado) == 3:
                     variaveis = [f"X{i+1} (Mina {i+1})" for i in range(len(resultado))]
                 else:
@@ -335,11 +340,9 @@ class MatrixApp(QWidget):
 
                 for i, valor in enumerate(resultado):
                     nome = variaveis[i]
-                    # Formata o resultado para 4 casas decimais e adiciona m³
                     mensagem_solucao += f"{nome}: {valor:.4f} m³\n" 
                     
                 QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

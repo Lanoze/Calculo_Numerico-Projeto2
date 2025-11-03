@@ -93,3 +93,42 @@ def eliminacao_gauss(sistema):
         solucao[i] = (sistema_copia[i][n] - soma) / sistema_copia[i][i]
         
     return solucao
+
+# ----- implementar método de Gauss-Seidel -----#
+
+def gauss_seidel(sistema, max_iter=100, tol=1e-6):
+
+    n = len(sistema)
+    TOLERANCIA_ZERO = 1e-12
+
+    # Faz uma cópia para trabalhar
+    A = [linha[:] for linha in sistema]
+
+    # Vetor inicial (pode ser tudo zero)
+    x = [0.0] * n
+
+    # Verificação rápida de zeros na diagonal
+    for i in range(n):
+        if abs(A[i][i]) < TOLERANCIA_ZERO:
+            return "Erro: elemento diagonal zero. Método de Gauss-Seidel não pode ser aplicado."
+
+    for _ in range(max_iter):
+        x_ant = x[:]  # guarda iteração anterior
+        for i in range(n):
+            soma1 = 0.0  # usa valores novos (j < i)
+            for j in range(i):
+                soma1 += A[i][j] * x[j]
+
+            soma2 = 0.0  # usa valores antigos (j > i)
+            for j in range(i + 1, n):
+                soma2 += A[i][j] * x_ant[j]
+
+            x[i] = (A[i][n] - soma1 - soma2) / A[i][i]
+
+        # critério de parada: norma infinito da diferença
+        erro = max(abs(x[i] - x_ant[i]) for i in range(n))
+        if erro < tol:
+            return x
+
+    # Se não convergiu
+    return "Aviso: método de Gauss-Seidel não convergiu dentro do número máximo de iterações."
