@@ -41,15 +41,15 @@ class MatrixApp(QWidget):
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
 
-        # --- NOVO: Conecta a mudança de método para alternar a entrada de dados ---
+        # --- NOVO: Conecta a mudança de metodo para alternar a entrada de dados ---
         self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
 
     def setup_ui(self):
         main_layout = QVBoxLayout(self) #Empilha verticalmente os elementos
 
-        label_matrix_a = QLabel("Solucionador de sistema linear")
-        label_matrix_a.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(label_matrix_a)
+        self.label_titulo = QLabel("Solucionador de sistema linear")
+        self.label_titulo.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(self.label_titulo)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = QStackedWidget()
@@ -194,8 +194,10 @@ class MatrixApp(QWidget):
     def toggle_input_area(self, text):
         """Alterna entre a interface da Matriz e a interface de Interpolação."""
         if text in ["Lagrange", "Newton"]:
+            self.label_titulo.setText("Interpolação")
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
         else:
+            self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
 
     def clear_layout(self, layout):
