@@ -69,17 +69,17 @@ class MatrixApp(QWidget):
         control_buttons_layout = QHBoxLayout() #Os botões aparecem horizontalmente
         control_buttons_layout.addStretch(1)
 
-        btn_add = QPushButton("+")
-        btn_add.setFixedSize(40, 40)
-        btn_add.setObjectName("Aumentar")
-        btn_add.clicked.connect(self.increase_dimensions)
-        control_buttons_layout.addWidget(btn_add)
+        self.btn_add = QPushButton("+")
+        self.btn_add.setFixedSize(40, 40)
+        self.btn_add.setObjectName("Aumentar")
+        self.btn_add.clicked.connect(self.increase_dimensions)
+        control_buttons_layout.addWidget(self.btn_add)
 
-        btn_subtract = QPushButton("-")
-        btn_subtract.setFixedSize(40, 40)
-        btn_subtract.setObjectName("Diminuir")
-        btn_subtract.clicked.connect(self.decrease_dimensions)
-        control_buttons_layout.addWidget(btn_subtract)
+        self.btn_subtract = QPushButton("-")
+        self.btn_subtract.setFixedSize(40, 40)
+        self.btn_subtract.setObjectName("Diminuir")
+        self.btn_subtract.clicked.connect(self.decrease_dimensions)
+        control_buttons_layout.addWidget(self.btn_subtract)
 
         control_buttons_layout.addStretch(1) #Ajuda a centralizar os botões
         matrix_page_layout.addLayout(control_buttons_layout)
@@ -132,10 +132,10 @@ class MatrixApp(QWidget):
         # ### MODIFICAÇÃO: Adicionando as opções de interpolação ###
         self.menu_opcoes.addItems(["Gauss","Gauss-Siedel","Jordan","LU","Jacobi", "Lagrange", "Newton"])
         # #########################################################
-        calculo_botao = QPushButton("Calcular")
-        calculo_botao.clicked.connect(self.calcular)
+        self.calculo_botao = QPushButton("Calcular")
+        self.calculo_botao.clicked.connect(self.calcular)
         calculo_row.addWidget(self.menu_opcoes)
-        calculo_row.addWidget(calculo_botao)
+        calculo_row.addWidget(self.calculo_botao)
         calculo_row.addStretch(1)
 
         main_layout.addLayout(calculo_row)
