@@ -53,7 +53,7 @@ class MatrixApp(QWidget):
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = QStackedWidget()
-        main_layout.addWidget(self.stacked_input_widget, stretch=1)
+        main_layout.addWidget(self.stacked_input_widget)
 
         # =================================================================
         # 1. Página de Entrada de Sistemas Lineares (Matriz)
@@ -240,7 +240,10 @@ class MatrixApp(QWidget):
 
         # --- 2. Limpa a UI Antiga --- 
         self.clear_layout(self.matrix_grid_layout)
-        self.matrix_widgets = [] 
+        self.matrix_widgets = []
+
+        if not self.isMaximized():
+            self.adjustSize()
 
         # Adiciona Labels das Variáveis (X1, X2, ...)
         for i in range(self.num_cols-1):
