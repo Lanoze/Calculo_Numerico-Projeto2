@@ -61,11 +61,11 @@ class MatrixApp(QWidget):
         self.matrix_page = QWidget()
         matrix_page_layout = QVBoxLayout(self.matrix_page)
 
-        # Matriz Grid Layout (Layout original do seu amigo)
+        # Matriz Grid Layout 
         self.matrix_grid_layout = QGridLayout()
         matrix_page_layout.addLayout(self.matrix_grid_layout)
 
-        # Controles de Dimensão (Layout original do seu amigo)
+        # Controles de Dimensão 
         control_buttons_layout = QHBoxLayout() #Os botões aparecem horizontalmente
         control_buttons_layout.addStretch(1)
 
@@ -84,7 +84,7 @@ class MatrixApp(QWidget):
         control_buttons_layout.addStretch(1) #Ajuda a centralizar os botões
         matrix_page_layout.addLayout(control_buttons_layout)
         
-        # Resize da Matriz (Layout original do seu amigo)
+        # Resize da Matriz 
         resize_row = QHBoxLayout()
         resize_row.addStretch(1)
         resize_button = QPushButton("Resize")
@@ -125,7 +125,7 @@ class MatrixApp(QWidget):
         self.stacked_input_widget.addWidget(self.interpolation_page) # Adiciona a segunda página
         # =================================================================
 
-        # Linha de Cálculo (Layout original do seu amigo)
+        # Linha de Cálculo 
         calculo_row = QHBoxLayout()
         calculo_row.addStretch(1)
         self.menu_opcoes = QComboBox()
@@ -140,7 +140,7 @@ class MatrixApp(QWidget):
 
         main_layout.addLayout(calculo_row)
 
-        # Css pra mudar a aparência (QSS sendo mais específico) (Original do seu amigo - mantido)
+        # Css pra mudar a aparência (QSS sendo mais específico) 
         self.setStyleSheet('''
                             QPushButton{
                             font-size: 15px;
@@ -202,7 +202,7 @@ class MatrixApp(QWidget):
 
     def clear_layout(self, layout):
         """Limpa todos os widgets de um layout."""
-        # ... (Função original do seu amigo - mantida) ...
+        
         while layout.count():
             item = layout.takeAt(0)
             if item.widget(): #Só limpla widgets a parte desse if
@@ -216,7 +216,7 @@ class MatrixApp(QWidget):
                 exit(1)
 
     def sync_data_from_ui(self):
-        # Salva os valores da UI (QLineEdit) no modelo de dados (self.matrix_data). (Original do seu amigo - mantida)
+        # Salva os valores da UI (QLineEdit) no modelo de dados (self.matrix_data). 
         if not self.matrix_widgets: 
             return
 
@@ -226,7 +226,7 @@ class MatrixApp(QWidget):
 
     def rebuild_matrix_ui(self):
         """Limpa e reconstrói a UI da matriz com base nos dados e dimensões atuais."""
-        # --- 1. Atualiza o Modelo de Dados --- (Original do seu amigo - mantida)
+        # --- 1. Atualiza o Modelo de Dados ---
         new_data = [["0"] * self.num_cols for _ in range(self.num_rows-1)]
 
         if self.matrix_data:
@@ -238,7 +238,7 @@ class MatrixApp(QWidget):
 
         self.matrix_data = new_data 
 
-        # --- 2. Limpa a UI Antiga --- (Original do seu amigo - mantida)
+        # --- 2. Limpa a UI Antiga --- 
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = [] 
 
@@ -253,7 +253,7 @@ class MatrixApp(QWidget):
         label_b.setAlignment(Qt.AlignCenter)
         self.matrix_grid_layout.addWidget(label_b, 0, self.num_cols - 1)
 
-        # --- 3. Recria a UI com os Dados Atualizados --- (Original do seu amigo - mantida)
+        # --- 3. Recria a UI com os Dados Atualizados 
         for row in range(1,self.num_rows):
             row_widgets = [] 
             for col in range(self.num_cols):
@@ -271,7 +271,7 @@ class MatrixApp(QWidget):
 
     def increase_dimensions(self):
         """Aumenta as dimensões e reconstrói a UI preservando os dados."""
-        # ... (Função original do seu amigo - mantida) ...
+      
         if (self.num_rows - 1) < self.MAX_VARIABLES:
             self.sync_data_from_ui()
             self.num_rows += 1
@@ -282,7 +282,7 @@ class MatrixApp(QWidget):
 
     def decrease_dimensions(self):
         """Diminui as dimensões e reconstrói a UI (descartando dados)."""
-        # ... (Função original do seu amigo - mantida) ...
+       
         if self.num_rows > 2 and self.num_cols > 1:
             self.num_rows -= 1
             self.num_cols -= 1
@@ -292,7 +292,7 @@ class MatrixApp(QWidget):
             print("Não é possível diminuir mais as dimensões da matriz.")
 
     def resize_matrix(self):
-        # ... (Função original do seu amigo - mantida) ...
+        
         try:
             numero_variaveis = int(self.resize_input.text())
         except ValueError:
