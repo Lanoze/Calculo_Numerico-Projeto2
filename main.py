@@ -199,7 +199,7 @@ class MatrixApp(QWidget):
     # --- NOVO: Função para alternar as áreas de input ---
     def toggle_input_area(self, text):
         """Alterna entre a interface da Matriz e a interface de Interpolação."""
-        if text in ["Lagrange", "Newton"]:
+        if text in ["Lagrange", "Newton", "Trapézio", "Simpson"]:
             self.label_titulo.setText("Interpolação")
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
         else:
@@ -430,27 +430,43 @@ class MatrixApp(QWidget):
                     )
                     QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
 
-
-        # -----Logica calculo Trapezio e Simpson----#
+        # TRECHO ALTERADO 
         elif metodo_selecionado in ["Trapézio", "Simpson"]:
-            # Solicita ao usuário os parâmetros
+
             try:
-                func_text, a_text, b_text, n_text = (
-                    self.x_data_input.text(),
-                    self.y_data_input.text(),
-                    self.x_interpolar_input.text(),
-         
-         
-         
-         
-         
-                    self.resize_input.text(),
-                )
-                f = eval(f"lambda x: {func_text}")  # Exemplo: "x**2 + 3*x - 5"
-                a, b, n = float(a_text), float(b_text), int(n_text)
-            except Exception:
+                valores = [float(v.replace(",", ".")) for v in self.x_data_input.text().split(",")]
+                h = float(self.y_data_input.text().replace(",", ".")) if self.y_data_input.text() else 0.40
+                n = len(valores) - 1
+
+                if metodo_selecionado == "Trapézio":
+                    soma = valores[0] + valores[-1] + 2 * sum(valores[1:-1])
+                    resultado = (h / 2) * soma
+                else:
+                    y = valores
+                    A13 = (h/3)*(y[0] + y[4] + 4*(y[1]+y[3]) + 2*y[2])
+                    A38 = (3*h/8)*(y[4] + 3*(y[5]+y[6]) + y[7])
+                    resultado = A13 + A38
+
+                QMessageBox.information(self, f"Resultado - {metodo_selecionado}", f"Área aproximada ≈ {resultado:.6f} m²")
+                return
+
+            except:
+                pass
+
+            func_text = self.x_data_input.text().strip()
+            a_text = self.y_data_input.text().replace(",", ".")
+            b_text = self.x_interpolar_input.text().replace(",", ".")
+            n_text = self.resize_input.text()
+
+            try:
+                f = eval("lambda x: " + func_text)
+                a = float(a_text)
+                b = float(b_text)
+                n = int(n_text)
+            except:
                 QMessageBox.critical(self, "Erro de Entrada",
-                    "Informe: f(x), limite inferior (a), limite superior (b) e n (inteiros) nos campos.")
+                    "Para integração via função, preencha:\n\n"
+                    "X: f(x)\nY: limite inferior\Valor X para interpolar: limite superior\nResize: n")
                 return
 
             if metodo_selecionado == "Trapézio":
@@ -458,17 +474,10 @@ class MatrixApp(QWidget):
             else:
                 resultado = integracao_simpson_repetida(f, a, b, n)
 
-            if isinstance(resultado, str):
-                QMessageBox.critical(self, "Erro de Integração", resultado)
-            else:
-                QMessageBox.information(
-                    self,
-                    f"Resultado - {metodo_selecionado}",
-                    f"Integral aproximada de f(x) no intervalo [{a}, {b}] ≈ {resultado:.6f}"
-                )
+            QMessageBox.information(self, f"Resultado - {metodo_selecionado}", f"Integral aproximada ≈ {resultado:.6f}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()
