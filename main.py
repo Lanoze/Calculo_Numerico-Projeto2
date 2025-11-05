@@ -138,9 +138,8 @@ class MatrixApp(QWidget):
         calculo_row.addWidget(self.menu_opcoes)
         calculo_row.addWidget(self.calculo_botao)
         calculo_row.addStretch(1)
-        self.main_layout.addStretch(1) #Para ativar ao maximizar a janela
-        self.main_layout.setStretch(2,0)
         self.main_layout.addLayout(calculo_row)
+        self.main_layout.addStretch(1)
 
         # Css pra mudar a aparência (QSS sendo mais específico) 
         self.setStyleSheet('''
@@ -336,16 +335,6 @@ class MatrixApp(QWidget):
         except ValueError:
             QMessageBox.critical(self, "Erro de Formato", "Certifique-se de que os valores de X, Y e x para interpolar são números válidos.")
             return None, None, None
-
-    def changeEvent(self, event, /):
-        super().changeEvent(event)
-        if event.type() == QEvent.Type.WindowStateChange:
-            #Janela maximizada
-            if self.windowState() & Qt.WindowState.WindowMaximized:
-                self.main_layout.setStretch(2,1) #ativa o stretch do índice 2
-            else:
-                #Janela restaurada ao tamanho normal
-                self.main_layout.setStretch(2, 0) #desativa o stretch do índice 2
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
