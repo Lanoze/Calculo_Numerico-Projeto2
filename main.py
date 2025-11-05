@@ -2,7 +2,7 @@
 
 from metodos import eliminacao_gauss 
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
-from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton
+from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio_repetida, integracao_simpson_repetida 
 # --------------------------------------
 
 import sys
@@ -130,8 +130,13 @@ class MatrixApp(QWidget):
         calculo_row = QHBoxLayout()
         calculo_row.addStretch(1)
         self.menu_opcoes = QComboBox()
-        # ### MODIFICAÇÃO: Adicionando as opções de interpolação ###
-        self.menu_opcoes.addItems(["Gauss","Gauss-Siedel","Jordan","LU","Jacobi", "Lagrange", "Newton"])
+
+        # Opcoes de metodos #
+        self.menu_opcoes.addItems([
+        "Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi",
+        "Lagrange", "Newton", "Trapézio", "Simpson"
+        ])
+
         # #########################################################
         self.calculo_botao = QPushButton("Calcular")
         self.calculo_botao.clicked.connect(self.calcular)
@@ -341,7 +346,7 @@ class MatrixApp(QWidget):
         resultado = None
 
         # --- Lógica de Sistemas Lineares (Preservada) ---
-        if metodo_selecionado in ["Gauss", "Gauss-Siedel", "Jordan", "LU", "Jacobi"]:
+        if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
             sistema = []
             # 1. Coleta os dados da UI, convertendo para float
             for row in range(len(self.matrix_widgets)):
@@ -364,7 +369,7 @@ class MatrixApp(QWidget):
                     return
                 resultado = eliminacao_gauss(sistema) 
                 
-            elif metodo_selecionado == "Gauss-Siedel":
+            elif metodo_selecionado == "Gauss-Seidel":
                 # Já importa 'gauss_seidel' no cabeçalho
                 if self.num_rows - 1 != self.num_cols - 1:
                     QMessageBox.critical(self, "Erro", "Gauss-Seidel requer um sistema quadrado (N equações e N variáveis).")
@@ -424,7 +429,43 @@ class MatrixApp(QWidget):
                         f"P({x_interpolar}) = {resultado:.6f}"
                     )
                     QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
-        # ------------------------------------------------------------------
+
+
+        # -----Logica calculo Trapezio e Simpson----#
+        elif metodo_selecionado in ["Trapézio", "Simpson"]:
+            # Solicita ao usuário os parâmetros
+            try:
+                func_text, a_text, b_text, n_text = (
+                    self.x_data_input.text(),
+                    self.y_data_input.text(),
+                    self.x_interpolar_input.text(),
+         
+         
+         
+         
+         
+                    self.resize_input.text(),
+                )
+                f = eval(f"lambda x: {func_text}")  # Exemplo: "x**2 + 3*x - 5"
+                a, b, n = float(a_text), float(b_text), int(n_text)
+            except Exception:
+                QMessageBox.critical(self, "Erro de Entrada",
+                    "Informe: f(x), limite inferior (a), limite superior (b) e n (inteiros) nos campos.")
+                return
+
+            if metodo_selecionado == "Trapézio":
+                resultado = integracao_trapezio_repetida(f, a, b, n)
+            else:
+                resultado = integracao_simpson_repetida(f, a, b, n)
+
+            if isinstance(resultado, str):
+                QMessageBox.critical(self, "Erro de Integração", resultado)
+            else:
+                QMessageBox.information(
+                    self,
+                    f"Resultado - {metodo_selecionado}",
+                    f"Integral aproximada de f(x) no intervalo [{a}, {b}] ≈ {resultado:.6f}"
+                )
 
 
 if __name__ == '__main__':

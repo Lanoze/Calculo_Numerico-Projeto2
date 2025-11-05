@@ -155,3 +155,38 @@ def interpolacao_newton(X, Y, x_interpolar):
         P_x += coeficientes[i] * termo_produtorio
         
     return P_x
+
+# Implementando Integração Numérica: Trapézio e Simpson Repetidas #
+
+def integracao_trapezio_repetida(f, a, b, n):
+   
+    if n <= 0:
+        return "Erro: número de subintervalos deve ser maior que zero."
+
+    h = (b - a) / n
+    soma = f(a) + f(b)
+
+    for i in range(1, n):
+        soma += 2 * f(a + i * h)
+
+    return (h / 2) * soma
+
+
+def integracao_simpson_repetida(f, a, b, n):
+   
+    if n <= 0:
+        return "Erro: número de subintervalos deve ser maior que zero."
+    if n % 2 != 0:
+        return "Erro: número de subintervalos deve ser par para a Regra de Simpson."
+
+    h = (b - a) / n
+    soma = f(a) + f(b)
+
+    for i in range(1, n):
+        x_i = a + i * h
+        if i % 2 == 0:
+            soma += 2 * f(x_i)
+        else:
+            soma += 4 * f(x_i)
+
+    return (h / 3) * soma
