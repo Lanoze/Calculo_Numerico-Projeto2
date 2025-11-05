@@ -13,15 +13,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QEvent
 
 
-#Talvez devesse criar um arquivo só pra funções auxiliares
-# def exibir_sistema(sistema):
-#     print('')
-#     for linha in range(len(sistema)):
-#         for coluna in range(len(sistema[0])-1):
-#             valor_atual = sistema[linha][coluna]
-#             print(f"{valor_atual}*X{coluna}",end='  ')
-#         print(f"= {sistema[linha][len(sistema[0])-1]}")
-
 class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -119,7 +110,9 @@ class MatrixApp(QWidget):
         
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
-        interp_layout.addRow(QLabel("Valor de x para interpolar:"), self.x_interpolar_input)
+        #CORRECAO---------------------------------------------------------
+        self.label_x_interpolar = QLabel("Valor de x para interpolar:")
+        interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
         
         interp_page_layout.addWidget(interpolation_group)
         interp_page_layout.addStretch(1)
@@ -209,6 +202,7 @@ class MatrixApp(QWidget):
             self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
             self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
             self.x_interpolar_input.show()  # mostrar novamente se estava oculto
+            self.label_x_interpolar.show()
             return
 
         # --- Integração Numérica (nova parte corrigida) ---
@@ -220,12 +214,14 @@ class MatrixApp(QWidget):
             self.x_data_input.setPlaceholderText("Ex: 3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.40")
             self.y_data_input.setPlaceholderText("Ex: 0.40 (distância entre pontos)")
             self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
+            self.label_x_interpolar.hide()
             return
 
         # --- Sistemas Lineares (mantém sua lógica original) ---
         else:
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
+            return
 
         # --------------------------------------
 
@@ -346,9 +342,29 @@ class MatrixApp(QWidget):
                 resultado = gauss_seidel(sistema)
 
             if resultado is not None:
-                mensagem = "\n".join(f"X{i+1}: {v:.4f}" for i,v in enumerate(resultado))
+                    # --- INÍCIO DA CORREÇÃO ---
+
+                    # PRIMEIRO, CHECAR SE O RESULTADO É UMA STRING (QUE SÓ PODE SER ERRO)
+                if isinstance(resultado, str):
+                    mensagem = resultado # A própria string já é a mensagem de erro
+                    
+                    # SE FOR UMA LISTA (O QUE ESPERAMOS), AÍ SIM FORMATAMOS
+                elif isinstance(resultado, list):
+                    try:
+                            # Tenta formatar, agora com segurança
+                        mensagem = "\n".join(f"X{i+1}: {float(v):.4f}" for i,v in enumerate(resultado))
+                    except ValueError:
+                            # Se falhar aqui, a lista tinha lixo dentro
+                        mensagem = f"Erro: A função retornou valores não-numéricos na lista: {resultado}"
+                    
+                    # Caso a função retorne algo que não é lista nem string
+                else:
+                    mensagem = f"Resultado em formato inesperado: {str(resultado)}"
+
+                    # Exibe o que quer que tenha acontecido
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
-            return
+                    # --- FIM DA CORREÇÃO ---
+                return
 
         elif metodo_selecionado in ["Lagrange","Newton"]:
             X,Y,x_interp = self.processar_dados_interpolacao()
