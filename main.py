@@ -10,7 +10,8 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent
+
 
 #Talvez devesse criar um arquivo só pra funções auxiliares
 # def exibir_sistema(sistema):
@@ -25,7 +26,7 @@ class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Solucionador de Sistema Linear / Interpolação")
-        self.setGeometry(100, 100, 400, 300) 
+        self.setGeometry(100, 100, 400, 300)
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
@@ -45,15 +46,15 @@ class MatrixApp(QWidget):
         self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
 
     def setup_ui(self):
-        main_layout = QVBoxLayout(self) #Empilha verticalmente os elementos
-
+        self.main_layout = QVBoxLayout(self) #Empilha verticalmente os elementos
+        #self.main_layout.addStretch(1)
         self.label_titulo = QLabel("Solucionador de sistema linear")
         self.label_titulo.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(self.label_titulo)
+        self.main_layout.addWidget(self.label_titulo)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = QStackedWidget()
-        main_layout.addWidget(self.stacked_input_widget)
+        self.main_layout.addWidget(self.stacked_input_widget)
 
         # =================================================================
         # 1. Página de Entrada de Sistemas Lineares (Matriz)
@@ -96,7 +97,7 @@ class MatrixApp(QWidget):
         resize_row.addStretch(1)
         matrix_page_layout.addLayout(resize_row)
         
-        matrix_page_layout.addStretch(1)
+        #matrix_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.matrix_page) # Adiciona a primeira página
 
         # =================================================================
@@ -137,8 +138,9 @@ class MatrixApp(QWidget):
         calculo_row.addWidget(self.menu_opcoes)
         calculo_row.addWidget(self.calculo_botao)
         calculo_row.addStretch(1)
-
-        main_layout.addLayout(calculo_row)
+        self.main_layout.addStretch(1) #Para ativar ao maximizar a janela
+        self.main_layout.setStretch(2,0)
+        self.main_layout.addLayout(calculo_row)
 
         # Css pra mudar a aparência (QSS sendo mais específico) 
         self.setStyleSheet('''
@@ -334,6 +336,16 @@ class MatrixApp(QWidget):
         except ValueError:
             QMessageBox.critical(self, "Erro de Formato", "Certifique-se de que os valores de X, Y e x para interpolar são números válidos.")
             return None, None, None
+
+    def changeEvent(self, event, /):
+        super().changeEvent(event)
+        if event.type() == QEvent.Type.WindowStateChange:
+            #Janela maximizada
+            if self.windowState() & Qt.WindowState.WindowMaximized:
+                self.main_layout.setStretch(2,1) #ativa o stretch do índice 2
+            else:
+                #Janela restaurada ao tamanho normal
+                self.main_layout.setStretch(2, 0) #desativa o stretch do índice 2
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
