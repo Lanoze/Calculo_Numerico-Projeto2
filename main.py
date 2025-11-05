@@ -196,247 +196,171 @@ class MatrixApp(QWidget):
                             }
                         ''')
 
-    # --- NOVO: Função para alternar as áreas de input ---
+    # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
-        """Alterna entre a interface da Matriz e a interface de Interpolação."""
-        if text in ["Lagrange", "Newton", "Trapézio", "Simpson"]:
+        """Alterna entre a interface da Matriz e a interface de Interpolação ou Integração."""
+
+        # --- Interpolação (mantém sua lógica atual) ---
+        if text in ["Lagrange", "Newton"]:
             self.label_titulo.setText("Interpolação")
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
+
+            # Mantém placeholders originais para interpolação
+            self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
+            self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            self.x_interpolar_input.show()  # mostrar novamente se estava oculto
+            return
+
+        # --- Integração Numérica (nova parte corrigida) ---
+        elif text in ["Trapézio", "Simpson"]:
+            self.label_titulo.setText("Integração Numérica")
+            self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
+
+            # Ajusta textos
+            self.x_data_input.setPlaceholderText("Ex: 3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.40")
+            self.y_data_input.setPlaceholderText("Ex: 0.40 (distância entre pontos)")
+            self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
+            return
+
+        # --- Sistemas Lineares (mantém sua lógica original) ---
         else:
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
 
+        # --------------------------------------
+
     def clear_layout(self, layout):
-        """Limpa todos os widgets de um layout."""
-        
         while layout.count():
             item = layout.takeAt(0)
-            if item.widget(): #Só limpla widgets a parte desse if
+            if item.widget():
                 item.widget().deleteLater()
             elif item.layout():
-                self.clear_layout(item.layout()) #Limpa recursivamente
-            elif item.spacerItem():
-                pass
-            else:
-                print("Caso inesperado")
-                exit(1)
+                self.clear_layout(item.layout())
 
     def sync_data_from_ui(self):
-        # Salva os valores da UI (QLineEdit) no modelo de dados (self.matrix_data). 
         if not self.matrix_widgets: 
             return
-
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
                 self.matrix_data[row][col] = self.matrix_widgets[row][col].text()
 
     def rebuild_matrix_ui(self):
-        """Limpa e reconstrói a UI da matriz com base nos dados e dimensões atuais."""
-        # --- 1. Atualiza o Modelo de Dados ---
         new_data = [["0"] * self.num_cols for _ in range(self.num_rows-1)]
-
         if self.matrix_data:
             rows_to_copy = min(len(self.matrix_data), self.num_rows-1)
             cols_to_copy = min(len(self.matrix_data[0]), self.num_cols)
             for row in range(rows_to_copy):
                 for col in range(cols_to_copy):
                     new_data[row][col] = self.matrix_data[row][col]
-
         self.matrix_data = new_data 
-
-        # --- 2. Limpa a UI Antiga --- 
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = []
 
         if not self.isMaximized():
             self.adjustSize()
 
-        # Adiciona Labels das Variáveis (X1, X2, ...)
         for i in range(self.num_cols-1):
             new_variable = QLabel(f"X{i+1}")
             new_variable.setAlignment(Qt.AlignCenter)
             self.matrix_grid_layout.addWidget(new_variable, 0, i)
 
-        # ### MUDANÇA FUNCIONAL: Adiciona o Label do Termo Independente (B)
         label_b = QLabel("B")
         label_b.setAlignment(Qt.AlignCenter)
         self.matrix_grid_layout.addWidget(label_b, 0, self.num_cols - 1)
 
-        # --- 3. Recria a UI com os Dados Atualizados 
         for row in range(1,self.num_rows):
             row_widgets = [] 
             for col in range(self.num_cols):
                 line_edit = QLineEdit(self)
                 line_edit.setFixedSize(50, 30)
                 line_edit.setAlignment(Qt.AlignCenter)
-
                 line_edit.setText(str(self.matrix_data[row-1][col]))
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)
-
             self.matrix_widgets.append(row_widgets) 
 
         self.matrix_grid_layout.setAlignment(Qt.AlignCenter)
 
     def increase_dimensions(self):
-        """Aumenta as dimensões e reconstrói a UI preservando os dados."""
-      
         if (self.num_rows - 1) < self.MAX_VARIABLES:
             self.sync_data_from_ui()
             self.num_rows += 1
             self.num_cols += 1
             self.rebuild_matrix_ui()
-        else:
-            print("Não é possível aumentar mais as dimensões da matriz.")
 
     def decrease_dimensions(self):
-        """Diminui as dimensões e reconstrói a UI (descartando dados)."""
-       
         if self.num_rows > 2 and self.num_cols > 1:
             self.num_rows -= 1
             self.num_cols -= 1
             self.sync_data_from_ui()
             self.rebuild_matrix_ui()
-        else:
-            print("Não é possível diminuir mais as dimensões da matriz.")
 
     def resize_matrix(self):
-        
         try:
             numero_variaveis = int(self.resize_input.text())
         except ValueError:
             QMessageBox.critical(self,"Erro","Você não digitou um inteiro")
             return
         if numero_variaveis <= 0:
-            QMessageBox.critical(self, "Erro", "Você digitou um número menor ou igual a 0")
+            QMessageBox.critical(self, "Erro", "Número inválido")
         elif numero_variaveis > self.MAX_VARIABLES:
-            QMessageBox.critical(self, "Erro", "Você digitou um número muito grande")
+            QMessageBox.critical(self, "Erro", "Número muito grande")
         else:
             self.num_rows = self.num_cols = numero_variaveis+1
             self.sync_data_from_ui()
             self.rebuild_matrix_ui()
 
-    # --- NOVO: Função para processar os dados de interpolação ---
     def processar_dados_interpolacao(self):
-        """Lê os QLineEdits de interpolação e retorna X, Y, x_interpolar ou exibe erro."""
         try:
-            # Converte a string de X em lista de floats
-            X_str = self.x_data_input.text().replace(' ', '').split(',')
-            X = [float(val.replace(',', '.')) for val in X_str if val]
-            
-            # Converte a string de Y em lista de floats
-            Y_str = self.y_data_input.text().replace(' ', '').split(',')
-            Y = [float(val.replace(',', '.')) for val in Y_str if val]
-
-            # Converte o x a interpolar para float
+            X = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
+            Y = [float(v.replace(',', '.')) for v in self.y_data_input.text().split(',')]
             x_interpolar = float(self.x_interpolar_input.text().replace(',', '.'))
-            
-            if len(X) != len(Y) or len(X) < 2:
-                QMessageBox.critical(self, "Erro de Interpolação", "As listas de X e Y devem ter o mesmo número de pontos (mínimo 2) e não podem estar vazias.")
-                return None, None, None
-            
-            return X, Y, x_interpolar
-        
-        except ValueError:
-            QMessageBox.critical(self, "Erro de Formato", "Certifique-se de que os valores de X, Y e x para interpolar são números válidos.")
-            return None, None, None
+            if len(X) != len(Y):
+                QMessageBox.critical(self,"Erro","X e Y devem ter o mesmo tamanho.")
+                return None,None,None
+            return X,Y,x_interpolar
+        except:
+            QMessageBox.critical(self,"Erro","Dados inválidos.")
+            return None,None,None
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
 
-        # --- Lógica de Sistemas Lineares (Preservada) ---
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
             sistema = []
-            # 1. Coleta os dados da UI, convertendo para float
             for row in range(len(self.matrix_widgets)):
                 linha = []
                 for col in range(len(self.matrix_widgets[row])):
                     try:
-                        text_value = self.matrix_widgets[row][col].text().replace(',', '.')
-                        linha.append(float(text_value))
-                    except ValueError:
-                        QMessageBox.critical(self, "Erro", f"Valor inválido na matriz na posição [{row+1},{col+1}].")
+                        linha.append(float(self.matrix_widgets[row][col].text().replace(',', '.')))
+                    except:
+                        QMessageBox.critical(self,"Erro","Valor inválido na matriz.")
                         return
                 sistema.append(linha)
 
-            print(f"\nVocê selecionou o método {metodo_selecionado}, e o sistema ficou:")
-            print(sistema)
-            
-            if metodo_selecionado == "Gauss": 
-                if self.num_rows - 1 != self.num_cols - 1:
-                    QMessageBox.critical(self, "Erro", "Eliminação de Gauss requer um sistema quadrado (N equações e N variáveis).")
-                    return
-                resultado = eliminacao_gauss(sistema) 
-                
+            if metodo_selecionado == "Gauss":
+                resultado = eliminacao_gauss(sistema)
+
             elif metodo_selecionado == "Gauss-Seidel":
-                # Já importa 'gauss_seidel' no cabeçalho
-                if self.num_rows - 1 != self.num_cols - 1:
-                    QMessageBox.critical(self, "Erro", "Gauss-Seidel requer um sistema quadrado (N equações e N variáveis).")
-                    return
-                try:
-                    resultado = gauss_seidel(sistema)
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Falha ao executar Gauss-Seidel: {e}")
-                    return
+                resultado = gauss_seidel(sistema)
 
-            elif metodo_selecionado == "Jordan":
-                QMessageBox.information(self, "Aviso", "Método de Jordan ainda não implementado.")
-                return
-            
-            elif metodo_selecionado == "LU":
-                QMessageBox.information(self, "Aviso", "Método de LU ainda não implementado.")
-                return
-
-            elif metodo_selecionado == "Jacobi":
-                QMessageBox.information(self, "Aviso", "Método de Jacobi ainda não implementado.")
-                return
-                
-            # 3. Exibição do Resultado para Sistemas Lineares (Preservada)
             if resultado is not None:
-                if isinstance(resultado, str):
-                    QMessageBox.critical(self, "Erro de Cálculo", resultado)
-                else:
-                    mensagem_solucao = f"Solução encontrada pelo método {metodo_selecionado}:\n"
-                    variaveis = [f"X{i+1}" for i in range(len(resultado))]
-                    for i, valor in enumerate(resultado):
-                        nome = variaveis[i]
-                        mensagem_solucao += f"{nome}: {valor:.4f}\n"
-                    QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
+                mensagem = "\n".join(f"X{i+1}: {v:.4f}" for i,v in enumerate(resultado))
+                QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
+            return
 
-        # --- NOVO: Lógica para os métodos de Interpolação ---
-        elif metodo_selecionado in ["Lagrange", "Newton"]:
-            X, Y, x_interpolar = self.processar_dados_interpolacao()
-            
-            if X is None:
-                return # Erro já exibido por processar_dados_interpolacao
+        elif metodo_selecionado in ["Lagrange","Newton"]:
+            X,Y,x_interp = self.processar_dados_interpolacao()
+            if X is None: return
+            resultado = interpolacao_lagrange(X,Y,x_interp) if metodo_selecionado=="Lagrange" else interpolacao_newton(X,Y,x_interp)
+            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"P({x_interp}) ≈ {resultado:.6f}")
+            return
 
-            print(f"\nVocê selecionou o método {metodo_selecionado}. X={X}, Y={Y}, x_interpolar={x_interpolar}")
-
-            if metodo_selecionado == "Lagrange":
-                resultado = interpolacao_lagrange(X, Y, x_interpolar)
-                
-            elif metodo_selecionado == "Newton":
-                resultado = interpolacao_newton(X, Y, x_interpolar)
-
-            # 3. Exibição do Resultado para Interpolação
-            if resultado is not None:
-                if isinstance(resultado, str):
-                    QMessageBox.critical(self, "Erro de Cálculo", resultado)
-                else:
-                    mensagem_solucao = (
-                        f"Resultado da Interpolação de {metodo_selecionado}:\n"
-                        f"P({x_interpolar}) = {resultado:.6f}"
-                    )
-                    QMessageBox.information(self, f"Resultado - {metodo_selecionado}", mensagem_solucao)
-
-        # TRECHO ALTERADO 
-        elif metodo_selecionado in ["Trapézio", "Simpson"]:
-
+        elif metodo_selecionado in ["Trapézio","Simpson"]:
             try:
                 valores = [float(v.replace(",", ".")) for v in self.x_data_input.text().split(",")]
                 h = float(self.y_data_input.text().replace(",", ".")) if self.y_data_input.text() else 0.40
-                n = len(valores) - 1
 
                 if metodo_selecionado == "Trapézio":
                     soma = valores[0] + valores[-1] + 2 * sum(valores[1:-1])
@@ -447,34 +371,19 @@ class MatrixApp(QWidget):
                     A38 = (3*h/8)*(y[4] + 3*(y[5]+y[6]) + y[7])
                     resultado = A13 + A38
 
-                QMessageBox.information(self, f"Resultado - {metodo_selecionado}", f"Área aproximada ≈ {resultado:.6f} m²")
+                QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"Área ≈ {resultado:.6f} m²")
                 return
 
             except:
                 pass
 
             func_text = self.x_data_input.text().strip()
-            a_text = self.y_data_input.text().replace(",", ".")
-            b_text = self.x_interpolar_input.text().replace(",", ".")
-            n_text = self.resize_input.text()
-
-            try:
-                f = eval("lambda x: " + func_text)
-                a = float(a_text)
-                b = float(b_text)
-                n = int(n_text)
-            except:
-                QMessageBox.critical(self, "Erro de Entrada",
-                    "Para integração via função, preencha:\n\n"
-                    "X: f(x)\nY: limite inferior\Valor X para interpolar: limite superior\nResize: n")
-                return
-
-            if metodo_selecionado == "Trapézio":
-                resultado = integracao_trapezio_repetida(f, a, b, n)
-            else:
-                resultado = integracao_simpson_repetida(f, a, b, n)
-
-            QMessageBox.information(self, f"Resultado - {metodo_selecionado}", f"Integral aproximada ≈ {resultado:.6f}")
+            a = float(self.y_data_input.text().replace(",", "."))
+            b = float(self.x_interpolar_input.text().replace(",", "."))
+            n = int(self.resize_input.text())
+            f = eval("lambda x: " + func_text)
+            resultado = integracao_trapezio_repetida(f,a,b,n) if metodo_selecionado=="Trapézio" else integracao_simpson_repetida(f,a,b,n)
+            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"Integral ≈ {resultado:.6f}")
 
 
 if __name__ == "__main__":
