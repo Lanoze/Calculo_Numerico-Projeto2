@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout
 )
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt
 
 
 class MatrixApp(QWidget):
@@ -29,18 +29,11 @@ class MatrixApp(QWidget):
         # Manter uma referência aos widgets para fácil acesso
         self.matrix_widgets = []
 
-        self.setup_ui()
-        # Cria a matriz inicial (agora preenche self.matrix_data com "0")
-        self.rebuild_matrix_ui()
-
-        # --- NOVO: Conecta a mudança de metodo para alternar a entrada de dados ---
-        self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
-
-    def setup_ui(self):
-        self.main_layout = QVBoxLayout(self) #Empilha verticalmente os elementos
-        #self.main_layout.addStretch(1)
+        #self.setup_ui()
+        self.main_layout = QVBoxLayout(self)  # Empilha verticalmente os elementos
+        # self.main_layout.addStretch(1)
         self.label_titulo = QLabel("Solucionador de sistema linear")
-        self.label_titulo.setAlignment(Qt.AlignCenter)
+        self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(self.label_titulo)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
@@ -53,12 +46,12 @@ class MatrixApp(QWidget):
         self.matrix_page = QWidget()
         matrix_page_layout = QVBoxLayout(self.matrix_page)
 
-        # Matriz Grid Layout 
+        # Matriz Grid Layout
         self.matrix_grid_layout = QGridLayout()
         matrix_page_layout.addLayout(self.matrix_grid_layout)
 
-        # Controles de Dimensão 
-        control_buttons_layout = QHBoxLayout() #Os botões aparecem horizontalmente
+        # Controles de Dimensão
+        control_buttons_layout = QHBoxLayout()  # Os botões aparecem horizontalmente
         control_buttons_layout.addStretch(1)
 
         self.btn_add = QPushButton("+")
@@ -73,10 +66,10 @@ class MatrixApp(QWidget):
         self.btn_subtract.clicked.connect(self.decrease_dimensions)
         control_buttons_layout.addWidget(self.btn_subtract)
 
-        control_buttons_layout.addStretch(1) #Ajuda a centralizar os botões
+        control_buttons_layout.addStretch(1)  # Ajuda a centralizar os botões
         matrix_page_layout.addLayout(control_buttons_layout)
-        
-        # Resize da Matriz 
+
+        # Resize da Matriz
         resize_row = QHBoxLayout()
         resize_row.addStretch(1)
         resize_button = QPushButton("Resize")
@@ -87,47 +80,47 @@ class MatrixApp(QWidget):
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
         matrix_page_layout.addLayout(resize_row)
-        
-        #matrix_page_layout.addStretch(1)
-        self.stacked_input_widget.addWidget(self.matrix_page) # Adiciona a primeira página
+
+        # matrix_page_layout.addStretch(1)
+        self.stacked_input_widget.addWidget(self.matrix_page)  # Adiciona a primeira página
 
         # =================================================================
         # 2. Página de Entrada de Interpolação (Listas X, Y)
         # =================================================================
         self.interpolation_page = QWidget()
         interp_page_layout = QVBoxLayout(self.interpolation_page)
-        
+
         interpolation_group = QGroupBox("Dados para Interpolação (X, Y)")
         interp_layout = QFormLayout(interpolation_group)
-        
+
         self.x_data_input = QLineEdit()
         self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
         interp_layout.addRow(QLabel("Pontos X (separados por vírgula):"), self.x_data_input)
-        
+
         self.y_data_input = QLineEdit()
         self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
         interp_layout.addRow(QLabel("Pontos Y (separados por vírgula):"), self.y_data_input)
-        
+
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
-        #CORRECAO---------------------------------------------------------
+        # CORRECAO---------------------------------------------------------
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
         interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
-        
+
         interp_page_layout.addWidget(interpolation_group)
         interp_page_layout.addStretch(1)
-        self.stacked_input_widget.addWidget(self.interpolation_page) # Adiciona a segunda página
+        self.stacked_input_widget.addWidget(self.interpolation_page)  # Adiciona a segunda página
         # =================================================================
 
-        # Linha de Cálculo 
+        # Linha de Cálculo
         calculo_row = QHBoxLayout()
         calculo_row.addStretch(1)
         self.menu_opcoes = QComboBox()
 
         # Opcoes de metodos #
         self.menu_opcoes.addItems([
-        "Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi",
-        "Lagrange", "Newton", "Trapézio", "Simpson"
+            "Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi",
+            "Lagrange", "Newton", "Trapézio", "Simpson"
         ])
 
         # #########################################################
@@ -139,55 +132,61 @@ class MatrixApp(QWidget):
         self.main_layout.addLayout(calculo_row)
         self.main_layout.addStretch(1)
 
-        # Css pra mudar a aparência (QSS sendo mais específico) 
+        # Css para mudar a aparência (QSS sendo mais específico)
         self.setStyleSheet('''
-                            QPushButton{
-                            font-size: 15px;
-                            background-color: #5B92A8
-                            }
-                            QPushButton:hover{
-                            background-color: #4D7C94
-                            }
-                            QPushButton:focus {
-                            outline: none;
-                            }
-        
-                            QPushButton#Aumentar{
-                            font-size: 30px;
-                            background-color: #4CAF50; /* Verde */
-                            }
-                            QPushButton#Aumentar:hover{
-                            background-color: #429945; /* Verde mais escuro */
-                            }
-        
-                            QPushButton#Diminuir{
-                            font-size: 30px;
-                            background-color: #f44336
-                            }
-                            QPushButton#Diminuir:hover{
-                            background-color: #C23129
-                            }
-        
-                            QComboBox {
-                            border: 1px solid #555; 
-                            border-radius: 5px; 
-                            padding: 5px 10px; 
-                            background-color: #5B92A8; 
-                            color: black; 
-                            font-size: 14px;
-                            min-width: 95px;
-                            }
-                            QComboBox:focus {
-                            outline: none;
-                            }
-        
-                            MatrixApp{
-                            background-color: #A6C0ED
-                            }
-                            QMessageBox{
-                            background-color: #A6C0ED
-                            }
-                        ''')
+                                    QPushButton{
+                                    font-size: 15px;
+                                    background-color: #5B92A8
+                                    }
+                                    QPushButton:hover{
+                                    background-color: #4D7C94
+                                    }
+                                    QPushButton:focus {
+                                    outline: none;
+                                    }
+
+                                    QPushButton#Aumentar{
+                                    font-size: 30px;
+                                    background-color: #4CAF50; /* Verde */
+                                    }
+                                    QPushButton#Aumentar:hover{
+                                    background-color: #429945; /* Verde mais escuro */
+                                    }
+
+                                    QPushButton#Diminuir{
+                                    font-size: 30px;
+                                    background-color: #f44336
+                                    }
+                                    QPushButton#Diminuir:hover{
+                                    background-color: #C23129
+                                    }
+
+                                    QComboBox {
+                                    border: 1px solid #555; 
+                                    border-radius: 5px; 
+                                    padding: 5px 10px; 
+                                    background-color: #5B92A8; 
+                                    color: black; 
+                                    font-size: 14px;
+                                    min-width: 95px;
+                                    }
+                                    QComboBox:focus {
+                                    outline: none;
+                                    }
+
+                                    MatrixApp{
+                                    background-color: #A6C0ED
+                                    }
+                                    QMessageBox{
+                                    background-color: #A6C0ED
+                                    }
+                                ''')
+
+        # Cria a matriz inicial (agora preenche self.matrix_data com "0")
+        self.rebuild_matrix_ui()
+
+        # --- NOVO: Conecta a mudança de metodo para alternar a entrada de dados ---
+        self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
 
     # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
@@ -257,11 +256,11 @@ class MatrixApp(QWidget):
 
         for i in range(self.num_cols-1):
             new_variable = QLabel(f"X{i+1}")
-            new_variable.setAlignment(Qt.AlignCenter)
+            new_variable.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.matrix_grid_layout.addWidget(new_variable, 0, i)
 
         label_b = QLabel("B")
-        label_b.setAlignment(Qt.AlignCenter)
+        label_b.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.matrix_grid_layout.addWidget(label_b, 0, self.num_cols - 1)
 
         for row in range(1,self.num_rows):
@@ -269,13 +268,13 @@ class MatrixApp(QWidget):
             for col in range(self.num_cols):
                 line_edit = QLineEdit(self)
                 line_edit.setFixedSize(50, 30)
-                line_edit.setAlignment(Qt.AlignCenter)
+                line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 line_edit.setText(self.matrix_data[row-1][col])
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)
             self.matrix_widgets.append(row_widgets) 
 
-        self.matrix_grid_layout.setAlignment(Qt.AlignCenter)
+        self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
@@ -308,15 +307,15 @@ class MatrixApp(QWidget):
 
     def processar_dados_interpolacao(self):
         try:
-            X = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
-            Y = [float(v.replace(',', '.')) for v in self.y_data_input.text().split(',')]
+            x = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
+            y = [float(v.replace(',', '.')) for v in self.y_data_input.text().split(',')]
             x_interpolar = float(self.x_interpolar_input.text().replace(',', '.'))
-            if len(X) != len(Y):
+            if len(x) != len(y):
                 QMessageBox.critical(self,"Erro","X e Y devem ter o mesmo tamanho.")
                 return None,None,None
-            return X,Y,x_interpolar
-        except:
-            QMessageBox.critical(self,"Erro","Dados inválidos.")
+            return x,y,x_interpolar
+        except Exception as e:
+            QMessageBox.critical(self,"Erro",f"Dados inválidos, erro: {e}")
             return None,None,None
 
     def calcular(self):
@@ -330,7 +329,7 @@ class MatrixApp(QWidget):
                 for col in range(len(self.matrix_widgets[row])):
                     try:
                         linha.append(float(self.matrix_widgets[row][col].text().replace(',', '.')))
-                    except:
+                    except ValueError:
                         QMessageBox.critical(self,"Erro","Valor inválido na matriz.")
                         return
                 sistema.append(linha)
@@ -367,9 +366,9 @@ class MatrixApp(QWidget):
                 return
 
         elif metodo_selecionado in ["Lagrange","Newton"]:
-            X,Y,x_interp = self.processar_dados_interpolacao()
-            if X is None: return
-            resultado = interpolacao_lagrange(X,Y,x_interp) if metodo_selecionado=="Lagrange" else interpolacao_newton(X,Y,x_interp)
+            x,y,x_interp = self.processar_dados_interpolacao()
+            if x is None: return
+            resultado = interpolacao_lagrange(x,y,x_interp) if metodo_selecionado=="Lagrange" else interpolacao_newton(x,y,x_interp)
             QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"P({x_interp}) ≈ {resultado:.6f}")
             return
 
@@ -383,14 +382,14 @@ class MatrixApp(QWidget):
                     resultado = (h / 2) * soma
                 else:
                     y = valores
-                    A13 = (h/3)*(y[0] + y[4] + 4*(y[1]+y[3]) + 2*y[2])
-                    A38 = (3*h/8)*(y[4] + 3*(y[5]+y[6]) + y[7])
-                    resultado = A13 + A38
+                    a13 = (h/3)*(y[0] + y[4] + 4*(y[1]+y[3]) + 2*y[2])
+                    a38 = (3*h/8)*(y[4] + 3*(y[5]+y[6]) + y[7])
+                    resultado = a13 + a38
 
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"Área ≈ {resultado:.6f} m²")
                 return
 
-            except:
+            except ValueError:
                 pass
 
             func_text = self.x_data_input.text().strip()
