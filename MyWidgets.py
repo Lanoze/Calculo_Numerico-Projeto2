@@ -50,8 +50,15 @@ class ResultadoIntegral(QDialog):
         main_layout.addWidget(self.resultado)
         self.grafico_btn = QPushButton("Mostrar")
         self.voltar_btn = QPushButton("Voltar")
+        button_row.addWidget(self.grafico_btn)
+        button_row.addWidget(self.voltar_btn)
+
+        self.grafico_btn.clicked.connect(self.controla_grafico)
         self.voltar_btn.clicked.connect(self.close)
-        main_layout.addWidget(self.voltar_btn)
+
+        main_layout.addLayout(button_row)
+        self.toolbar.setVisible(False)
+        self.canvas.setVisible(False)
 
         self.setStyleSheet('''
                                             QPushButton{
@@ -68,6 +75,16 @@ class ResultadoIntegral(QDialog):
                                             background-color: #A6C0ED
                                             }
                                         ''')
+    def controla_grafico(self):
+        if self.grafico_btn.text() == "Mostrar":
+            self.toolbar.setVisible(True)
+            self.canvas.setVisible(True)
+            self.grafico_btn.setText("Esconder")
+        else:
+            self.toolbar.setVisible(False)
+            self.canvas.setVisible(False)
+            self.grafico_btn.setText("Mostrar")
+        self.adjustSize()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
