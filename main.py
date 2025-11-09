@@ -1,9 +1,9 @@
 # main.py
-from logging import exception
+#from logging import exception
 from auxiliares import formatar_expression,avaliar_expressao
 from metodos import eliminacao_gauss 
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
-from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio_repetida, integracao_simpson_repetida 
+from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio, integracao_simpson
 # --------------------------------------
 
 import sys
@@ -446,7 +446,10 @@ class MatrixApp(QWidget):
             if numero_pontos < 2:
                 QMessageBox.critical(self,"Erro","Você precisa de pelo menos 2 pontos")
                 return
-            if metodo_selecionado == "Simpson" and numero_pontos%2 != 0:
+            elif numero_pontos > 1000:
+                QMessageBox.critical(self, "Erro", "Você colocou um número muito grande de pontos (> 1000)")
+                return
+            if metodo_selecionado == "Simpson" and numero_pontos%2 == 0:
                 QMessageBox.critical(self, "Erro", "O método de 1/3 de Simpson requer um número ímpar de pontos")
                 return
             y_pontos = []
@@ -459,11 +462,13 @@ class MatrixApp(QWidget):
                 try:
                     funcao = formatar_expression(self.y_data_input.text())
                     #Estamos considerando o espaçamento entre os pontos constante
-                    for _ in range(numero_pontos):
+                    for i in range(numero_pontos):
                         x_pontos.append(ponto_atual)
                         y_pontos.append(avaliar_expressao(funcao,ponto_atual))
-                        ponto_atual += h
-                except exception as e:
+                        # Fiz dessa forma mais complexa para evitar erro de arredondamento, melhor que ficar somando h
+                        ponto_atual = lim_inferior + (i+1)*h
+                except Exception as e:
+                    #print("Erro fatal")
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
                     return
             #O usuário já digitou os pontos de y
@@ -476,12 +481,17 @@ class MatrixApp(QWidget):
                     for i in range(numero_pontos):
                         x_pontos.append(ponto_atual)
                         y_pontos[i] = float(y_pontos[i])
-                        ponto_atual += h
-                except exception as e:
+                        ponto_atual = lim_inferior + (i+1)*h
+                except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
 
             print(f"X = {x_pontos}")
             print(f"Y = {y_pontos}")
+            if metodo_selecionado == "Trapézio":
+                resultado = integracao_trapezio(y_pontos,h)
+            else:
+                resultado = integracao_simpson(y_pontos,h)
+            QMessageBox.information(self,"Resultado",f"A integral resultou em: {resultado:.5f}")
 
 
 
