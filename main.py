@@ -5,6 +5,7 @@ from metodos import eliminacao_gauss
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio, integracao_simpson
 # --------------------------------------
+from MyWidgets import ResultadoIntegral
 
 import sys
 from PySide6.QtWidgets import (
@@ -484,14 +485,15 @@ class MatrixApp(QWidget):
                         ponto_atual = lim_inferior + (i+1)*h
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
-
+            #Necessário pois o metodo remove o ponto inicial e final de Y_pontos
+            y_pontos_original = y_pontos.copy()
             print(f"X = {x_pontos}")
             print(f"Y = {y_pontos}")
             if metodo_selecionado == "Trapézio":
                 resultado = integracao_trapezio(y_pontos,h)
             else:
                 resultado = integracao_simpson(y_pontos,h)
-            QMessageBox.information(self,"Resultado",f"A integral resultou em: {resultado:.5f}")
+            ResultadoIntegral("Resultado da Integral",self, resultado,x_pontos,y_pontos_original).exec()
 
 
 
