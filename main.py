@@ -1,5 +1,6 @@
 # main.py
-
+from logging import exception
+from auxiliares import formatar_expression,avaliar_expressao
 from metodos import eliminacao_gauss 
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio_repetida, integracao_simpson_repetida 
@@ -8,7 +9,8 @@ from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, in
 import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout
+    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
+    QCheckBox
 )
 from PySide6.QtCore import Qt
 
@@ -16,7 +18,7 @@ from PySide6.QtCore import Qt
 class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Solucionador de Sistema Linear / Interpolação")
+        self.setWindowTitle("Calculadora de métodos Numéricos")
         self.setGeometry(100, 100, 400, 300)
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
@@ -90,16 +92,18 @@ class MatrixApp(QWidget):
         self.interpolation_page = QWidget()
         interp_page_layout = QVBoxLayout(self.interpolation_page)
 
-        interpolation_group = QGroupBox("Dados para Interpolação (X, Y)")
-        interp_layout = QFormLayout(interpolation_group)
+        self.interpolation_group = QGroupBox("Dados para Interpolação (X, Y)")
+        interp_layout = QFormLayout(self.interpolation_group)
 
         self.x_data_input = QLineEdit()
-        self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
-        interp_layout.addRow(QLabel("Pontos X (separados por vírgula):"), self.x_data_input)
+        self.x_data_input.setPlaceholderText("Ex: 3.0, 3.6, 7")
+        self.xLabel = QLabel("Pontos X (separados por vírgula):")
+        interp_layout.addRow(self.xLabel, self.x_data_input)
 
         self.y_data_input = QLineEdit()
         self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
-        interp_layout.addRow(QLabel("Pontos Y (separados por vírgula):"), self.y_data_input)
+        self.yLabel = QLabel("Pontos Y (separados por vírgula):")
+        interp_layout.addRow(self.yLabel, self.y_data_input)
 
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
@@ -107,7 +111,10 @@ class MatrixApp(QWidget):
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
         interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
 
-        interp_page_layout.addWidget(interpolation_group)
+        interp_page_layout.addWidget(self.interpolation_group)
+        self.CBUsarFuncao = QCheckBox("Usar função")
+        self.CBUsarFuncao.toggled.connect(self.check_toggle)
+        interp_page_layout.addWidget(self.CBUsarFuncao)
         interp_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.interpolation_page)  # Adiciona a segunda página
         # =================================================================
@@ -173,6 +180,42 @@ class MatrixApp(QWidget):
                                     QComboBox:focus {
                                     outline: none;
                                     }
+                                    
+                                    QCheckBox {
+                                        spacing: 10px; /* Espaço entre o interruptor e o texto */
+                                    }
+                            
+                                    /* O 'trilho' por onde o botão desliza */
+                                    QCheckBox::indicator {
+                                        width: 40px;
+                                        height: 20px;
+                                        background-color: #AAAAAA; /* Cor do trilho (desligado) */
+                                        border: 1px solid #777;
+                                        border-radius: 10px; /* Deixa o trilho arredondado */
+                                    }
+                            
+                                    /* O círculo deslizante (handle) */
+                                    QCheckBox::indicator::handle {
+                                        background-color: white;
+                                        border-radius: 5px; /* Deixa o círculo... circular */
+                                        width: 16px;
+                                        height: 16px;
+                                        margin: 2px; /* Pequena margem interna */
+                                    }
+                            
+                                    /* --- ESTADO LIGADO --- */
+                                    
+                                    /* O trilho quando está LIGADO (checked) */
+                                    QCheckBox::indicator:checked {
+                                        background-color: #131352; /* Cor verde (ligado) */
+                                        border: 1px solid #3E8E41;
+                                    }
+                            
+                                    /* O círculo deslizante quando está LIGADO */
+                                    QCheckBox::indicator:checked::handle {
+                                        /* Move o círculo para a direita */
+                                        margin-left: 22px; 
+                                    }
 
                                     MatrixApp{
                                     background-color: #A6C0ED
@@ -195,11 +238,13 @@ class MatrixApp(QWidget):
         # --- Interpolação (mantém sua lógica atual) ---
         if text in ["Lagrange", "Newton"]:
             self.label_titulo.setText("Interpolação")
+            #self.CBUsarFuncao.setVisible(False)
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
-
+            self.xLabel.setText("Pontos X (separados por vírgula):")
+            self.interpolation_group.setTitle("Dados para Interpolação (X, Y)")
             # Mantém placeholders originais para interpolação
-            self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
-            self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
+            # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
             self.x_interpolar_input.show()  # mostrar novamente se estava oculto
             self.label_x_interpolar.show()
             return
@@ -207,11 +252,14 @@ class MatrixApp(QWidget):
         # --- Integração Numérica (nova parte corrigida) ---
         elif text in ["Trapézio", "Simpson"]:
             self.label_titulo.setText("Integração Numérica")
+            self.interpolation_group.setTitle("Dados para Integração (X, Y)")
+            #self.CBUsarFuncao.setVisible(True)
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
 
             # Ajusta textos
-            self.x_data_input.setPlaceholderText("Ex: 3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.40")
-            self.y_data_input.setPlaceholderText("Ex: 0.40 (distância entre pontos)")
+            self.xLabel.setText("Limites e número de pontos: ")
+            # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
+            # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
             self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
             self.label_x_interpolar.hide()
             return
@@ -305,6 +353,16 @@ class MatrixApp(QWidget):
             self.sync_data_from_ui()
             self.rebuild_matrix_ui()
 
+    def check_toggle(self,checked):
+        if checked:
+            self.yLabel.setText("Função:")
+            self.y_data_input.setPlaceholderText("Ex: e^x")
+            print("Caixinha ativada!")
+        else:
+            self.yLabel.setText("Pontos Y (separados por vírgula):")
+            self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            print("Caixinha desativada!")
+
     def processar_dados_interpolacao(self):
         try:
             x = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
@@ -373,32 +431,60 @@ class MatrixApp(QWidget):
             return
 
         elif metodo_selecionado in ["Trapézio","Simpson"]:
-            try:
-                valores = [float(v.replace(",", ".")) for v in self.x_data_input.text().split(",")]
-                h = float(self.y_data_input.text().replace(",", ".")) if self.y_data_input.text() else 0.40
-
-                if metodo_selecionado == "Trapézio":
-                    soma = valores[0] + valores[-1] + 2 * sum(valores[1:-1])
-                    resultado = (h / 2) * soma
-                else:
-                    y = valores
-                    a13 = (h/3)*(y[0] + y[4] + 4*(y[1]+y[3]) + 2*y[2])
-                    a38 = (3*h/8)*(y[4] + 3*(y[5]+y[6]) + y[7])
-                    resultado = a13 + a38
-
-                QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"Área ≈ {resultado:.6f} m²")
+            x_dados = self.x_data_input.text().split(',')
+            if len(x_dados) != 3:
+                QMessageBox.critical(self,"Erro","Você precisa digitar exatamente 3 números")
                 return
-
+            try:
+                x_dados[0] = float(x_dados[0])
+                x_dados[1] = float(x_dados[1])
+                x_dados[2] = int(x_dados[2])
             except ValueError:
-                pass
+                QMessageBox.critical(self,"Erro","Tipo de dado inválido")
+                return
+            lim_inferior,lim_superior,numero_pontos = x_dados
+            if numero_pontos < 2:
+                QMessageBox.critical(self,"Erro","Você precisa de pelo menos 2 pontos")
+                return
+            if metodo_selecionado == "Simpson" and numero_pontos%2 != 0:
+                QMessageBox.critical(self, "Erro", "O método de 1/3 de Simpson requer um número ímpar de pontos")
+                return
+            y_pontos = []
+            x_pontos = []
+            h = (lim_superior - lim_inferior) / (numero_pontos - 1)
+            ponto_atual = lim_inferior
 
-            func_text = self.x_data_input.text().strip()
-            a = float(self.y_data_input.text().replace(",", "."))
-            b = float(self.x_interpolar_input.text().replace(",", "."))
-            n = int(self.resize_input.text())
-            f = eval("lambda x: " + func_text)
-            resultado = integracao_trapezio_repetida(f,a,b,n) if metodo_selecionado=="Trapézio" else integracao_simpson_repetida(f,a,b,n)
-            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"Integral ≈ {resultado:.6f}")
+            #Se os pontos vão ser calculados por uma função
+            if self.CBUsarFuncao.isChecked():
+                try:
+                    funcao = formatar_expression(self.y_data_input.text())
+                    #Estamos considerando o espaçamento entre os pontos constante
+                    for _ in range(numero_pontos):
+                        x_pontos.append(ponto_atual)
+                        y_pontos.append(avaliar_expressao(funcao,ponto_atual))
+                        ponto_atual += h
+                except exception as e:
+                    QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
+                    return
+            #O usuário já digitou os pontos de y
+            else:
+                y_pontos = self.y_data_input.text().split(',')
+                if len(y_pontos) != numero_pontos:
+                    QMessageBox.critical(self,"Erro","O número de pontos X e Y devem ser iguais")
+                    return
+                try:
+                    for i in range(numero_pontos):
+                        x_pontos.append(ponto_atual)
+                        y_pontos[i] = float(y_pontos[i])
+                        ponto_atual += h
+                except exception as e:
+                    QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
+
+            print(f"X = {x_pontos}")
+            print(f"Y = {y_pontos}")
+
+
+
 
 
 if __name__ == "__main__":
