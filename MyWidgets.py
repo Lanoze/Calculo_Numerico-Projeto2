@@ -36,8 +36,8 @@ class ResultadoIntegral(QDialog):
         ax.spines['left'].set_zorder(10)
         ax.spines['bottom'].set_zorder(10)
         ax.grid(True)
-        # ax.axhline(y=0, color='black', linestyle='--')
-        # ax.axvline(x=0, color='black', linestyle='--')
+        ax.axhline(y=0, color='black')
+        ax.axvline(x=0, color='black')
 
         ax.plot(x_pontos,y_pontos,label="Pontos",marker='o')
         ax.fill_between(x_pontos, y_pontos, color='blue', alpha=0.6, label='Área sob a curva')
