@@ -17,7 +17,7 @@ class ResultadoIntegral(QDialog):
         self.figura = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvas(self.figura)
         self.toolbar = NavigationToolbar(self.canvas, self)
-        self.canvas.setMinimumWidth(1000)
+        self.canvas.setMinimumWidth(300)
         #self.figura.set_visible(False)
         ax = self.figura.add_subplot(111)
         ax.set_xlabel('x')
