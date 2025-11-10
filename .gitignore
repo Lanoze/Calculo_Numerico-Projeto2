@@ -9,3 +9,4 @@ __pycache__/
 
 # Arquivos de configuração da IDE
 .idea/
+.idea
