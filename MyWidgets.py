@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication,QDialog, QVBoxLayout,QLabel, QPushButton
+from PySide6.QtWidgets import QApplication,QDialog, QVBoxLayout,QHBoxLayout,QLabel, QPushButton
 from matplotlib.figure import Figure
 
 from matplotlib.backends.backend_qtagg import (
@@ -45,7 +45,7 @@ class ResultadoIntegral(QDialog):
         main_layout.addWidget(self.canvas)
         self.resultado = QLabel(f"A integral resultou em {resultado:.5f}")
         self.resultado.setStyleSheet("font-size: 10pt;")
-        button_row = QVBoxLayout()
+        button_row = QHBoxLayout()
         #button_row.addWidget(self.)
         main_layout.addWidget(self.resultado)
         self.grafico_btn = QPushButton("Mostrar")
