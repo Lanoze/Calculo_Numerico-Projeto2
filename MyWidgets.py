@@ -42,7 +42,7 @@ class ResultadoIntegral(QDialog):
         ax.plot(x_pontos,y_pontos,label="Pontos",marker='o')
         ax.fill_between(x_pontos, y_pontos, color='blue', alpha=0.6, label='Área sob a curva')
         main_layout.addWidget(self.toolbar)
-        main_layout.addWidget(self.canvas)
+        main_layout.addWidget(self.canvas,stretch=1)
         self.resultado = QLabel(f"A integral resultou em {resultado:.5f}")
         self.resultado.setStyleSheet("font-size: 10pt;")
         button_row = QHBoxLayout()
