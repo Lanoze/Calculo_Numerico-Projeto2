@@ -485,15 +485,14 @@ class MatrixApp(QWidget):
                         ponto_atual = lim_inferior + (i+1)*h
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
-            #Necessário pois o metodo remove o ponto inicial e final de Y_pontos
-            y_pontos_original = y_pontos.copy()
             print(f"X = {x_pontos}")
             print(f"Y = {y_pontos}")
+            # Necessário a cópia pois os metodos removem o ponto inicial e final de Y_pontos
             if metodo_selecionado == "Trapézio":
-                resultado = integracao_trapezio(y_pontos,h)
+                resultado = integracao_trapezio(y_pontos.copy(),h)
             else:
-                resultado = integracao_simpson(y_pontos,h)
-            ResultadoIntegral("Resultado da Integral",self, resultado,x_pontos,y_pontos_original).exec()
+                resultado = integracao_simpson(y_pontos.copy(),h)
+            ResultadoIntegral("Resultado da Integral",self, resultado,x_pontos,y_pontos).exec()
 
 
 
