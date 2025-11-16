@@ -23,14 +23,14 @@ def multiplicar_linha_por_escalar(sistema, linha_i, escalar):
         sistema[linha_i][j] *= escalar
     return sistema
 
-def trocar_linhas(sistema, linha_i, linha_j):
+def trocar_linhas(sistema: list[list[float]], linha_i: int, linha_j: int):
     """Implementa a OEL: Troca a linha i pela linha j no sistema."""
     sistema[linha_i], sistema[linha_j] = sistema[linha_j], sistema[linha_i]
     return sistema
 
 
 
-def avaliar_expressao(func, valor_x: float) -> float:
+def avaliar_expressao(func: str, valor_x: float) -> float:
     func = func.lower() #Torna todos os caracteres minúsculos
     variavel = {'x': valor_x}
     resultado = evaluate(func, local_dict=variavel).item()

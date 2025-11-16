@@ -4,57 +4,59 @@ from auxiliares import somar_linhas, trocar_linhas
 
 # --- Algoritmo Principal: Eliminação de Gauss ---
 
-def eliminacao_gauss(sistema):
-    """
-    Resolve um sistema linear pelo método de Eliminação de Gauss com Pivoteamento Parcial.
-    """
-    n = len(sistema)
-    TOLERANCIA = 1e-10 
-    sistema_copia = [linha[:] for linha in sistema] 
+def eliminacao_gauss(sistema: list[list[float]]):
+    if all(c == 0 for c in sistema[-1]):
+        return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
+    sistema_passo_a_passo = []
+    sistema_passo_a_passo.append(sistema)
+    for index in range(len(sistema)-1):
+        if all(c == 0 for c in sistema[index]):
+            return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
+        # Procura o maior pivô absoluto e sua linha
+        pivo = sistema[index][index]
+        linha_maior_pivo = index
+        for index2 in range(index+1,len(sistema)):
+            if abs(sistema[index2][index]) > abs(pivo):
+                pivo = sistema[index2][index]
+                linha_maior_pivo = index2
+        #Deixa o try except cuidar disso
+        if pivo == 0:
+            return "Erro, coluna totalmente nula, impossível de aplicar o método de Gauss"
 
-    # === Passo 1: Eliminação e Triangularização (Com Pivoteamento) ===
-    for i in range(n):
-        
-        # 1. Pivoteamento Parcial
-        max_valor = abs(sistema_copia[i][i])
-        max_linha = i
-        for k in range(i + 1, n):
-            if abs(sistema_copia[k][i]) > max_valor:
-                max_valor = abs(sistema_copia[k][i])
-                max_linha = k
+        #Troca a linha pelo maior pivô, para realizar o maior pivoteamento parcial
+        trocar_linhas(sistema, linha_maior_pivo, index)
+        for index2 in range(index+1,len(sistema)):
+            m = -sistema[index2][index]/pivo
+            somar_linhas(sistema, index2, index, m)
+            if all(c == 0 for c in sistema[index2]):
+                return "Erro, equações linearmente dependentes, o sistema não tem solução única"
+        sistema_passo_a_passo.append(sistema)
+        print(f"Sistema no índice {index}:")
+        print(sistema)
+    #O sistema já está completo, agora é só pegar os resultados
+    resultado = []
+    #debug_variable = len(sistema)
+    for i, elemento in enumerate(reversed(sistema)):
+        equacao_reversa = elemento[::-1]
+        #print(f"Índice reverso {i}: {equacao_reversa}")
+        soma_numerador = equacao_reversa[0]
+        for j in range(1, i+1):
+            soma_numerador -= (equacao_reversa[j] * resultado[j-1])
+        resultado.append(soma_numerador/equacao_reversa[1+i])
+        # print(f"X{debug_variable} = {resultado[i]}")
+        # debug_variable -= 1
+    #Os resultados vão de X1 até Xn
+    resultado.reverse()
+    print(f"Ao fim do processo: {resultado}")
+    return resultado
 
-        if max_valor < TOLERANCIA:
-            return "Erro: Sistema singular ou mal-condicionado (Pivô zero)."
 
-        # Troca as linhas, usando a função de auxiliares.py
-        if max_linha != i:
-            trocar_linhas(sistema_copia, i, max_linha)
 
-        # 2. Eliminação dos elementos abaixo do pivô
-        for k in range(i + 1, n):
-            fator = sistema_copia[k][i] / sistema_copia[i][i]
-            
-            # Operação Elementar, usando a função de auxiliares.py
-            somar_linhas(sistema_copia, k, i, -fator)
-            
-            # CORREÇÃO CRÍTICA DE PRECISÃO:
-            sistema_copia[k][i] = 0.0
-
-    # === Passo 2: Substituição Retroativa ===
-    
-    if abs(sistema_copia[n-1][n-1]) < TOLERANCIA:
-        return "Erro: Sistema indeterminado ou inconsistente (pivô final zero)."
-        
-    solucao = [0.0] * n
-
-    for i in range(n - 1, -1, -1):
-        soma = 0.0
-        for j in range(i + 1, n):
-            soma += sistema_copia[i][j] * solucao[j]
-
-        solucao[i] = (sistema_copia[i][n] - soma) / sistema_copia[i][i]
-        
-    return solucao
+        # # O elemento de maior valor absoluto passa a ser o pivô da linha atual (especificada por "index")
+        # trocar_linhas(sistema,index,indice_maior_pivo)
+        # pivo = sistema[index][index] #O pivo sempre esta na diagonal principal
+        # for j in range(index+1, len(sistema)):
+        #
 
 # ----- implementar método de Gauss-Seidel -----#
 
