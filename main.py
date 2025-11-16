@@ -3,7 +3,7 @@
 from auxiliares import formatar_expression,avaliar_expressao
 from metodos import eliminacao_gauss 
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
-from metodos import gauss_seidel, interpolacao_lagrange, interpolacao_newton, integracao_trapezio, integracao_simpson
+from metodos import*
 # --------------------------------------
 from MyWidgets import ResultadoIntegral
 
@@ -396,9 +396,10 @@ class MatrixApp(QWidget):
             try:
                 if metodo_selecionado == "Gauss":
                     resultado = eliminacao_gauss(sistema)
-
                 elif metodo_selecionado == "Gauss-Seidel":
                     resultado = gauss_seidel(sistema)
+                elif metodo_selecionado == "Jordan":
+                    resultado = eliminacao_jordan(sistema)
             except Exception as e:
                 mensagem = f"Erro: {e}"
                 # --- INÍCIO DA CORREÇÃO ---

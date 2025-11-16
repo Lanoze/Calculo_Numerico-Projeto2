@@ -1,6 +1,7 @@
 
 # IMPORTANTE: Importa apenas as funções auxiliares que serão usadas pela Eliminação de Gauss
-from auxiliares import somar_linhas, trocar_linhas
+from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar
+
 
 # --- Algoritmo Principal: Eliminação de Gauss ---
 
@@ -50,13 +51,49 @@ def eliminacao_gauss(sistema: list[list[float]]):
     #print(f"Ao fim do processo: {resultado}")
     return resultado
 
+def eliminacao_jordan(sistema: list[list[float]]):
+    sistema_passo_a_passo = []
+    sistema_passo_a_passo.append(sistema)
+    #Diferente do de Gauss, é necessário ir até a última linha, para eliminar os elementos acima do pivô
+    for index in range(len(sistema)):
+        # if all(c == 0 for c in sistema[index]):
+        #     return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
+        # Procura o maior pivô absoluto e sua linha
+        pivo = sistema[index][index]
+        linha_maior_pivo = index
+        for index2 in range(index + 1, len(sistema)):
+            if abs(sistema[index2][index]) > abs(pivo):
+                pivo = sistema[index2][index]
+                linha_maior_pivo = index2
+        # Deixa o try except cuidar disso
+        # if pivo == 0:
+        #     return "Erro, coluna totalmente nula, impossível de aplicar o método de Gauss"
 
-
-        # # O elemento de maior valor absoluto passa a ser o pivô da linha atual (especificada por "index")
-        # trocar_linhas(sistema,index,indice_maior_pivo)
-        # pivo = sistema[index][index] #O pivo sempre esta na diagonal principal
-        # for j in range(index+1, len(sistema)):
-        #
+        # Troca a linha pelo maior pivô, para realizar o maior pivoteamento parcial
+        trocar_linhas(sistema, linha_maior_pivo, index)
+        #Zera elementos abaixo do pivô
+        for index2 in range(index + 1, len(sistema)):
+            m = -sistema[index2][index] / pivo
+            somar_linhas(sistema, index2, index, m)
+            # if all(c == 0 for c in sistema[index2]):
+            #     return "Erro, equações linearmente dependentes, o sistema não tem solução única"
+        #Zera elementos acima do pivô
+        for index2 in range(index-1, -1, -1):
+            m = -sistema[index2][index] / pivo
+            somar_linhas(sistema, index2, index, m)
+        sistema_passo_a_passo.append(sistema)
+        print(f"Sistema no índice {index}:")
+        print(sistema)
+    # O sistema já está completo, agora é só pegar os resultados
+    resultado = []
+    for index in range(len(sistema)):
+        divisor = sistema[index][index]
+        multiplicar_linha_por_escalar(sistema, index, 1/divisor)
+        resultado.append(sistema[index][-1])
+    sistema_passo_a_passo.append(sistema)
+    print("Sistema como matriz identidade:")
+    print(sistema)
+    return resultado
 
 # ----- implementar método de Gauss-Seidel -----#
 
