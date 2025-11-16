@@ -113,7 +113,8 @@ def eliminacao_jordan(sistema: list[list[float]]):
 # ----- implementar método de Gauss-Seidel -----#
 
 def gauss_seidel(sistema, max_iter=100, tol=1e-6):
-    solucao = [0]*len(sistema)
+    #solucao = [0]*len(sistema)
+    solucao = [-1,0,1]
     solucao_passo_a_passo = []
     solucao_passo_a_passo.append(solucao.copy())
     #print(solucao)
@@ -142,12 +143,15 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6):
     #print("Solução passo a passo:")
     #print(solucao_passo_a_passo)
     maior_diferenca = abs(solucao_passo_a_passo[1][0] - solucao_passo_a_passo[0][0])
+    maior_variavel = abs(solucao_passo_a_passo[1][0])
     for j in range(1,len(solucao_passo_a_passo[0])):
         if abs(solucao_passo_a_passo[1][j] - solucao_passo_a_passo[0][j]) > maior_diferenca:
             maior_diferenca = abs(solucao_passo_a_passo[1][j] - solucao_passo_a_passo[0][j])
+        if abs(solucao_passo_a_passo[1][j]) > maior_variavel:
+            maior_variavel = abs(solucao_passo_a_passo[1][j])
     iteration = 2
-    # print(f"A maior diferença foi {maior_diferenca}")
-    while iteration <= max_iter and maior_diferenca > tol:
+    print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
+    while iteration <= max_iter and maior_diferenca/maior_variavel > tol:
         for i in range(len(sistema)):
             equacao = sistema[i]
             soma_numerador = equacao[-1]
@@ -159,11 +163,13 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6):
         print(solucao)
         solucao_passo_a_passo.append(solucao.copy())
         maior_diferenca = abs(solucao_passo_a_passo[iteration][0] - solucao_passo_a_passo[iteration-1][0])
-
+        maior_variavel = abs(solucao_passo_a_passo[iteration][0])
         for j in range(1, len(solucao_passo_a_passo[0])):
             if abs(solucao_passo_a_passo[iteration][j] - solucao_passo_a_passo[iteration-1][j]) > maior_diferenca:
                 maior_diferenca = abs(solucao_passo_a_passo[iteration][j] - solucao_passo_a_passo[iteration-1][j])
-
+            if abs(solucao_passo_a_passo[iteration][j]) > maior_variavel:
+                maior_variavel = abs(solucao_passo_a_passo[iteration][j])
+        print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
         iteration += 1
     if iteration > max_iter:
         return "Sistema não convergiu em tempo suficiente"
