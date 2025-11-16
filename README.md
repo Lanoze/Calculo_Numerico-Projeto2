@@ -8,7 +8,7 @@ numéricos, organizados nos quatro tópicos do projeto:
 
 1. Sistemas de equações lineares – métodos diretos  
 2. Sistemas de equações lineares – métodos iterativos (Gauss-Seidel)  
-3. Interpolação polinomial e ajuste por mínimos quadrados  
+3. Interpolação polinomial 
 4. Integração numérica (Regra do Trapézio e Regra de Simpson repetidas)  
 
 O código foi estruturado para permitir **reutilização**: com a mesma base,
@@ -20,7 +20,7 @@ O código foi estruturado para permitir **reutilização**: com a mesma base,
 
 - Resolução de sistemas lineares por métodos diretos (ex.: eliminação de Gauss, etc.).
 - Resolução de sistemas lineares por métodos iterativos (Gauss-Seidel).
-- Interpolação polinomial (formas de Lagrange/Newton) e regressão por mínimos quadrados.
+- Interpolação polinomial (formas de Lagrange/Newton).
 - Integração numérica usando Regra do Trapézio e Regra de Simpson, na forma repetida.
 - Organização modular do código, facilitando a inclusão de novos problemas.
 - Possibilidade de reutilizar as rotinas numéricas com diferentes conjuntos de dados.
