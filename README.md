@@ -29,6 +29,13 @@ O código foi estruturado para permitir **reutilização**: com a mesma base,
 
 ## Estrutura do Projeto
 
+```text
+Calculo_Numerico-Projeto2/
+├── main.py          # Ponto de entrada da aplicação
+├── metodos.py       # Implementação dos métodos numéricos
+├── auxiliares.py    # Funções de apoio (validação, formatação, etc.)
+├── MyWidgets.py     # Componentes de interface (widgets) utilizados no programa
+└── ...              # Outros arquivos e recursos auxiliares
 
 main.py: coordena a execução, interação com o usuário e chamada das funções dos outros módulos.
 
@@ -37,65 +44,3 @@ metodos.py: concentra as rotinas de Cálculo Numérico (sistemas lineares, inter
 auxiliares.py: contém funções auxiliares para leitura/tratamento de dados, mensagens de erro e suporte geral.
 
 MyWidgets.py: reúne os componentes de interface utilizados para facilitar a entrada de dados e a exibição de resultados.
-
-Requisitos
-
-Python 3.10+ (recomendado)
-
-Bibliotecas padrão da linguagem e demais dependências listadas no projeto
-
-Se houver um arquivo requirements.txt, instale as dependências com:
-
-pip install -r requirements.txt
-
-Como executar
-
-Clone este repositório:
-
-git clone https://github.com/Lanoze/Calculo_Numerico-Projeto2.git
-cd Calculo_Numerico-Projeto2
-
-
-(Opcional, mas recomendado) Crie e ative um ambiente virtual:
-
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-
-
-Instale as dependências (se houver):
-
-pip install -r requirements.txt
-
-
-Execute o programa:
-
-python main.py
-
-Uso
-
-Ao executar main.py, o usuário tem acesso às funcionalidades do projeto.
-
-Cada rotina numérica foi escrita para aceitar novos conjuntos de dados, permitindo
-reutilizar o código com problemas de mesma natureza (mesma estrutura de equações, tabelas de pontos, etc.).
-
-Os dados podem ser ajustados diretamente no código ou, dependendo da implementação,
-informados via interface/entrada interativa.
-
-Adaptação aos problemas da disciplina
-
-Este projeto foi pensado para ser usado com os problemas propostos no enunciado da
-atividade complementar da disciplina, tais como:
-
-Sistemas de produção (mistura de materiais) modelados por sistemas lineares.
-
-Circuitos elétricos e treliças resolvidos por métodos iterativos.
-
-Dados experimentais para interpolação e ajuste de curvas.
-
-Cálculo de áreas em perfis de rios, lagos e navios via integração numérica.
-
-Basta ajustar as matrizes, vetores e tabelas de dados nos pontos apropriados do
-código para aplicar as rotinas já implementadas.
