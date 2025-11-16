@@ -5,13 +5,13 @@ from auxiliares import somar_linhas, trocar_linhas
 # --- Algoritmo Principal: Eliminação de Gauss ---
 
 def eliminacao_gauss(sistema: list[list[float]]):
-    if all(c == 0 for c in sistema[-1]):
-        return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
+    # if all(c == 0 for c in sistema[-1]):
+    #     return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(sistema)
     for index in range(len(sistema)-1):
-        if all(c == 0 for c in sistema[index]):
-            return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
+        # if all(c == 0 for c in sistema[index]):
+        #     return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
         # Procura o maior pivô absoluto e sua linha
         pivo = sistema[index][index]
         linha_maior_pivo = index
@@ -20,16 +20,16 @@ def eliminacao_gauss(sistema: list[list[float]]):
                 pivo = sistema[index2][index]
                 linha_maior_pivo = index2
         #Deixa o try except cuidar disso
-        if pivo == 0:
-            return "Erro, coluna totalmente nula, impossível de aplicar o método de Gauss"
+        # if pivo == 0:
+        #     return "Erro, coluna totalmente nula, impossível de aplicar o método de Gauss"
 
         #Troca a linha pelo maior pivô, para realizar o maior pivoteamento parcial
         trocar_linhas(sistema, linha_maior_pivo, index)
         for index2 in range(index+1,len(sistema)):
             m = -sistema[index2][index]/pivo
             somar_linhas(sistema, index2, index, m)
-            if all(c == 0 for c in sistema[index2]):
-                return "Erro, equações linearmente dependentes, o sistema não tem solução única"
+            # if all(c == 0 for c in sistema[index2]):
+            #     return "Erro, equações linearmente dependentes, o sistema não tem solução única"
         sistema_passo_a_passo.append(sistema)
         print(f"Sistema no índice {index}:")
         print(sistema)
@@ -47,7 +47,7 @@ def eliminacao_gauss(sistema: list[list[float]]):
         # debug_variable -= 1
     #Os resultados vão de X1 até Xn
     resultado.reverse()
-    print(f"Ao fim do processo: {resultado}")
+    #print(f"Ao fim do processo: {resultado}")
     return resultado
 
 

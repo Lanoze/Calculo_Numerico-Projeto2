@@ -393,36 +393,36 @@ class MatrixApp(QWidget):
                         return
                 sistema.append(linha)
 
-            if metodo_selecionado == "Gauss":
-                resultado = eliminacao_gauss(sistema)
+            try:
+                if metodo_selecionado == "Gauss":
+                    resultado = eliminacao_gauss(sistema)
 
-            elif metodo_selecionado == "Gauss-Seidel":
-                resultado = gauss_seidel(sistema)
+                elif metodo_selecionado == "Gauss-Seidel":
+                    resultado = gauss_seidel(sistema)
+            except Exception as e:
+                mensagem = f"Erro: {e}"
+                # --- INÍCIO DA CORREÇÃO ---
 
-            if resultado is not None:
-                    # --- INÍCIO DA CORREÇÃO ---
+                # PRIMEIRO, CHECAR SE O RESULTADO É UMA STRING (QUE SÓ PODE SER ERRO)
+            if isinstance(resultado, str):
+                mensagem = resultado # A própria string já é a mensagem de erro
 
-                    # PRIMEIRO, CHECAR SE O RESULTADO É UMA STRING (QUE SÓ PODE SER ERRO)
-                if isinstance(resultado, str):
-                    mensagem = resultado # A própria string já é a mensagem de erro
-                    
-                    # SE FOR UMA LISTA (O QUE ESPERAMOS), AÍ SIM FORMATAMOS
-                elif isinstance(resultado, list):
-                    try:
-                            # Tenta formatar, agora com segurança
-                        mensagem = "\n".join(f"X{i+1}: {float(v):.4f}" for i,v in enumerate(resultado))
-                    except ValueError:
-                            # Se falhar aqui, a lista tinha lixo dentro
-                        mensagem = f"Erro: A função retornou valores não-numéricos na lista: {resultado}"
-                    
-                    # Caso a função retorne algo que não é lista nem string
-                else:
-                    mensagem = f"Resultado em formato inesperado: {str(resultado)}"
+                # SE FOR UMA LISTA (O QUE ESPERAMOS), AÍ SIM FORMATAMOS
+            elif isinstance(resultado, list):
+                try:
+                        # Tenta formatar, agora com segurança
+                    mensagem = "\n".join(f"X{i+1}: {float(v):.5g}" for i,v in enumerate(resultado))
+                except ValueError:
+                        # Se falhar aqui, a lista tinha lixo dentro
+                    mensagem = f"Erro: A função retornou valores não-numéricos na lista: {resultado}"
 
-                    # Exibe o que quer que tenha acontecido
-                QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
-                    # --- FIM DA CORREÇÃO ---
-                return
+            #     # Caso a função retorne algo que não é lista nem string
+            # else:
+            #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
+
+                # Exibe o que quer que tenha acontecido
+            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
+                # --- FIM DA CORREÇÃO ---
 
         elif metodo_selecionado in ["Lagrange","Newton"]:
             x,y,x_interp = self.processar_dados_interpolacao()
