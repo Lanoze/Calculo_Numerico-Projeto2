@@ -406,7 +406,8 @@ class MatrixApp(QWidget):
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
-
+        if metodo_selecionado in ("Jacobi","LU"):
+            resultado = "Método ainda não implementado"
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
             sistema = []
             for row in range(len(self.matrix_widgets)):
