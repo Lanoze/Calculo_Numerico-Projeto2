@@ -11,6 +11,8 @@ def eliminacao_gauss(sistema: list[list[float]]):
     #     return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(deepcopy(sistema))
+    print("Sistema inicial:")
+    print(sistema)
     for index in range(len(sistema)-1):
         # if all(c == 0 for c in sistema[index]):
         #     return "Erro, linha totalmente nula, impossível de aplicar o método de Gauss"
@@ -28,9 +30,9 @@ def eliminacao_gauss(sistema: list[list[float]]):
         #Troca a linha pelo maior pivô, para realizar o maior pivoteamento parcial
         trocar_linhas(sistema, linha_maior_pivo, index)
 
-        if index == 0:
-            print("Apos o primeiro pivoteamento em Gauss:")
-            print(sistema)
+        # if index == 0:
+        #     print("Apos o primeiro pivoteamento em Gauss:")
+        #     print(sistema)
 
         for index2 in range(index+1,len(sistema)):
             m = -sistema[index2][index]/pivo
@@ -38,8 +40,8 @@ def eliminacao_gauss(sistema: list[list[float]]):
             # if all(c == 0 for c in sistema[index2]):
             #     return "Erro, equações linearmente dependentes, o sistema não tem solução única"
         sistema_passo_a_passo.append(deepcopy(sistema))
-        # print(f"Sistema no índice {index}:")
-        # print(sistema)
+        print(f"Sistema no índice {index}:")
+        print(sistema)
     #O sistema já está completo, agora é só pegar os resultados
     resultado = []
     #debug_variable = len(sistema)
@@ -55,13 +57,15 @@ def eliminacao_gauss(sistema: list[list[float]]):
     #Os resultados vão de X1 até Xn
     resultado.reverse()
     #print(f"Ao fim do processo: {resultado}")
-    print("Resultado passo a passo de Gauss:")
-    print(sistema_passo_a_passo[0])
+    # print("Resultado passo a passo de Gauss:")
+    # print(sistema_passo_a_passo[0])
     return resultado
 
 def eliminacao_jordan(sistema: list[list[float]]):
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(deepcopy(sistema))
+    print("Sistema inicial:")
+    print(sistema)
     #Diferente do de Gauss, é necessário ir até a última linha, para eliminar os elementos acima do pivô
     for index in range(len(sistema)):
         # if all(c == 0 for c in sistema[index]):
@@ -80,9 +84,9 @@ def eliminacao_jordan(sistema: list[list[float]]):
         # Troca a linha pelo maior pivô, para realizar o maior pivoteamento parcial
         trocar_linhas(sistema, linha_maior_pivo, index)
 
-        if index == 0:
-            print("Apos o primeiro pivoteamento em Jordan:")
-            print(sistema)
+        # if index == 0:
+        #     print("Apos o primeiro pivoteamento em Jordan:")
+        #     print(sistema)
 
         #Zera elementos abaixo do pivô
         for index2 in range(index + 1, len(sistema)):
@@ -95,8 +99,8 @@ def eliminacao_jordan(sistema: list[list[float]]):
             m = -sistema[index2][index] / pivo
             somar_linhas(sistema, index2, index, m)
         sistema_passo_a_passo.append(deepcopy(sistema))
-        # print(f"Sistema no índice {index}:")
-        # print(sistema)
+        print(f"Sistema no índice {index}:")
+        print(sistema)
     # O sistema já está completo, agora é só pegar os resultados
     resultado = []
     for index in range(len(sistema)):
@@ -104,10 +108,10 @@ def eliminacao_jordan(sistema: list[list[float]]):
         multiplicar_linha_por_escalar(sistema, index, 1/divisor)
         resultado.append(sistema[index][-1])
     sistema_passo_a_passo.append(deepcopy(sistema))
-    # print("Sistema como matriz identidade:")
-    # print(sistema)
-    print("Resultado passo a passo de Jordan:")
-    print(sistema_passo_a_passo[0])
+    print("Sistema como matriz identidade:")
+    print(sistema)
+    # print("Resultado passo a passo de Jordan:")
+    # print(sistema_passo_a_passo[0])
     return resultado
 
 # ----- implementar método de Gauss-Seidel -----#
