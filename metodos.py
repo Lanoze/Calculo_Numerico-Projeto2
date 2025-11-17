@@ -112,9 +112,11 @@ def eliminacao_jordan(sistema: list[list[float]]):
 
 # ----- implementar método de Gauss-Seidel -----#
 
-def gauss_seidel(sistema, max_iter=100, tol=1e-6):
-    #solucao = [0]*len(sistema)
-    solucao = [-1,0,1]
+def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
+    if valores_iniciais:
+        solucao = valores_iniciais
+    else:
+        solucao = [0]*len(sistema)
     solucao_passo_a_passo = []
     solucao_passo_a_passo.append(solucao.copy())
     #print(solucao)
@@ -172,7 +174,7 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6):
         print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
         iteration += 1
     if iteration > max_iter:
-        return "Sistema não convergiu em tempo suficiente"
+        return "Sistema não convergiu em iterações suficientes"
     else:
         print("Solução passo a passo de Gauss-Seidel:")
         print(solucao_passo_a_passo)

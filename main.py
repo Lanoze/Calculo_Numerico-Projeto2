@@ -41,6 +41,8 @@ class MatrixApp(QWidget):
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = QStackedWidget()
+        #self.stacked_input_widget.setSizePolicy(self.stacked_input_widget.sizePolicy().Maximum)
+        #Colocar stretch no stacked_widget não funcionou
         self.main_layout.addWidget(self.stacked_input_widget)
 
         # =================================================================
@@ -83,6 +85,23 @@ class MatrixApp(QWidget):
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
         matrix_page_layout.addLayout(resize_row)
+        metodo_iterativoLayout = QFormLayout()
+        self.tolLabel = QLabel("Tolerância:")
+        self.tolInput = QLineEdit()
+        self.tolInput.setPlaceholderText("1e-6")
+        metodo_iterativoLayout.addRow(self.tolLabel,self.tolInput)
+        self.listLabel = QLabel("Valores iniciais:")
+        self.listInput = QLineEdit()
+        self.listInput.setPlaceholderText("[0...0]")
+        metodo_iterativoLayout.addRow(self.listLabel, self.listInput)
+        self.iterLabel = QLabel("Máximo de iterações")
+        self.iterInput = QLineEdit()
+        self.iterInput.setPlaceholderText("100")
+        metodo_iterativoLayout.addRow(self.iterLabel,self.iterInput)
+        self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
+        self.listLabel.setVisible(False); self.listInput.setVisible(False)
+        self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
+        matrix_page_layout.addLayout(metodo_iterativoLayout,stretch=1)
 
         # matrix_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.matrix_page)  # Adiciona a primeira página
@@ -127,7 +146,7 @@ class MatrixApp(QWidget):
 
         # Opcoes de metodos #
         self.menu_opcoes.addItems([
-            "Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi",
+            "Gauss", "Jordan", "LU", "Jacobi","Gauss-Seidel",
             "Lagrange", "Newton", "Trapézio", "Simpson"
         ])
 
@@ -248,7 +267,6 @@ class MatrixApp(QWidget):
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
             self.x_interpolar_input.show()  # mostrar novamente se estava oculto
             self.label_x_interpolar.show()
-            return
 
         # --- Integração Numérica (nova parte corrigida) ---
         elif text in ["Trapézio", "Simpson"]:
@@ -263,13 +281,21 @@ class MatrixApp(QWidget):
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
             self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
             self.label_x_interpolar.hide()
-            return
 
         # --- Sistemas Lineares (mantém sua lógica original) ---
         else:
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
-            return
+            if text in ("Jacobi","Gauss-Seidel"):
+                self.tolLabel.setVisible(True); self.tolInput.setVisible(True)
+                self.listLabel.setVisible(True); self.listInput.setVisible(True)
+                self.iterLabel.setVisible(True); self.iterInput.setVisible(True)
+            else:
+                self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
+                self.listLabel.setVisible(False); self.listInput.setVisible(False)
+                self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
+        #self.adjustSize()
+        #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
 
@@ -397,7 +423,26 @@ class MatrixApp(QWidget):
                 if metodo_selecionado == "Gauss":
                     resultado = eliminacao_gauss(sistema)
                 elif metodo_selecionado == "Gauss-Seidel":
-                    resultado = gauss_seidel(sistema)
+                    tol = self.tolInput.text()
+                    if tol: #Se não for string vazia
+                        tol = float(tol)
+                    else:
+                        tol = 1e-6
+                    max_iter = self.iterInput.text()
+                    if max_iter:
+                        max_iter = int(self.iterInput.text())
+                    else:
+                        max_iter = 100
+                    valores_iniciais = self.listInput.text()
+                    if valores_iniciais:
+                        valores_iniciais = [float(x) for x in self.listInput.text().split(',')]
+                        if len(valores_iniciais) == self.num_rows - 1:
+                            resultado = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
+                        else:
+                            resultado = "Você não colocou o número correto de valores iniciais."
+                    else:
+                        valores_iniciais = []
+                        resultado = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
                 elif metodo_selecionado == "Jordan":
                     resultado = eliminacao_jordan(sistema)
             except Exception as e:
