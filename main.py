@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QCheckBox
 )
 from PySide6.QtCore import Qt
+from numexpr import evaluate as numEvaluate
 
 
 class MatrixApp(QWidget):
@@ -418,9 +419,9 @@ class MatrixApp(QWidget):
                 linha = []
                 for col in range(len(self.matrix_widgets[row])):
                     try:
-                        linha.append(float(self.matrix_widgets[row][col].text().replace(',', '.')))
-                    except ValueError:
-                        QMessageBox.critical(self,"Erro","Valor inválido na matriz.")
+                        linha.append(float(numEvaluate(self.matrix_widgets[row][col].text().replace(',', '.'))))
+                    except Exception as e:
+                        QMessageBox.critical(self,"Erro",f"Valor inválido na matriz: {e}")
                         return
                 sistema.append(linha)
 
