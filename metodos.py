@@ -86,7 +86,17 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     solucao_passo_a_passo = []
     solucao_passo_a_passo.append(solucao.copy())
 
-    #todo organizar as diagonais para verificar se tem alguma nula
+    #todo Seria melhor o teste da diagonal dominante, mas deixa assim mesmo
+    for i in range(len(sistema)):
+        #Verifica se a diagonal principal é nula
+        if sistema[i][i] == 0:
+            for j in range(len(sistema)):
+                if sistema[j][i] != 0 and sistema[i][j] != 0: #Verifica se as diagonais de ambas as linha não vão zerar
+                    trocar_linhas(sistema,i,j)
+                    break
+    print("Sistema após rearranjo:")
+    print(sistema)
+
 
     iteration = 1
     while True:
