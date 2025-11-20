@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QTimer
 
 
 class MatrixApp(QWidget):
@@ -294,7 +294,7 @@ class MatrixApp(QWidget):
                 self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
                 self.listLabel.setVisible(False); self.listInput.setVisible(False)
                 self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        self.adjustSize()
+        QTimer.singleShot(3,self.adjustSize)
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
@@ -350,6 +350,7 @@ class MatrixApp(QWidget):
             self.matrix_widgets.append(row_widgets) 
 
         self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        QTimer.singleShot(3,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
