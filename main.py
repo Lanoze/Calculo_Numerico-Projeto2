@@ -5,7 +5,7 @@ from metodos import eliminacao_gauss
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
 # --------------------------------------
-from MyWidgets import ResultadoIntegral
+from MyWidgets import ResultadoIntegral,DynamicStackedWidget
 
 import sys
 from PySide6.QtWidgets import (
@@ -40,7 +40,7 @@ class MatrixApp(QWidget):
         self.main_layout.addWidget(self.label_titulo)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
-        self.stacked_input_widget = QStackedWidget()
+        self.stacked_input_widget = DynamicStackedWidget()
         #self.stacked_input_widget.setSizePolicy(self.stacked_input_widget.sizePolicy().Maximum)
         #Colocar stretch no stacked_widget não funcionou
         self.main_layout.addWidget(self.stacked_input_widget)
@@ -294,7 +294,7 @@ class MatrixApp(QWidget):
                 self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
                 self.listLabel.setVisible(False); self.listInput.setVisible(False)
                 self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        #self.adjustSize()
+        self.adjustSize()
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------

@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QApplication,QDialog, QVBoxLayout,QHBoxLayout,QLabel, QPushButton
+from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QStackedWidget, \
+    QSizePolicy
 from matplotlib.figure import Figure
 
 from matplotlib.backends.backend_qtagg import (
@@ -85,6 +86,24 @@ class ResultadoIntegral(QDialog):
             self.canvas.setVisible(False)
             self.grafico_btn.setText("Mostrar")
         self.adjustSize()
+
+
+class DynamicStackedWidget(QStackedWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+    def sizeHint(self):
+        """Retorna o sizeHint do widget atual"""
+        if self.currentWidget():
+            return self.currentWidget().sizeHint()
+        return super().sizeHint()
+
+    def minimumSizeHint(self):
+        """Retorna o minimumSizeHint do widget atual"""
+        if self.currentWidget():
+            return self.currentWidget().minimumSizeHint()
+        return super().minimumSizeHint()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
