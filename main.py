@@ -20,7 +20,6 @@ class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Calculadora de métodos Numéricos")
-        self.setGeometry(100, 100, 400, 300)
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
@@ -250,6 +249,7 @@ class MatrixApp(QWidget):
 
         # --- NOVO: Conecta a mudança de metodo para alternar a entrada de dados ---
         self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
+        self.move(100, 100)
 
     # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
