@@ -295,7 +295,7 @@ class MatrixApp(QWidget):
                 self.listLabel.setVisible(False); self.listInput.setVisible(False)
                 self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
         if not self.isMaximized():
-            QTimer.singleShot(3,self.adjustSize)
+            QTimer.singleShot(self.num_rows*4,self.adjustSize)
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
@@ -349,7 +349,7 @@ class MatrixApp(QWidget):
 
         self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if not self.isMaximized():
-            QTimer.singleShot(3,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
+            QTimer.singleShot(self.num_rows*4,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
