@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QMetaObject
 
 
 class MatrixApp(QWidget):
@@ -294,9 +294,8 @@ class MatrixApp(QWidget):
                 self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
                 self.listLabel.setVisible(False); self.listInput.setVisible(False)
                 self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        if not self.isMaximized():
-            QTimer.singleShot(self.num_rows*4,self.adjustSize)
-        #self.stacked_input_widget.adjustSize()
+        if not self.isMaximized(): #Garante que só ajusta o tamanho depois de terminar todas as mudanças da tela
+            QMetaObject.invokeMethod(self, "adjustSize", Qt.QueuedConnection)
 
         # --------------------------------------
 
@@ -349,7 +348,7 @@ class MatrixApp(QWidget):
 
         self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if not self.isMaximized():
-            QTimer.singleShot(self.num_rows*4,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
+            QMetaObject.invokeMethod(self, "adjustSize", Qt.QueuedConnection)
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
