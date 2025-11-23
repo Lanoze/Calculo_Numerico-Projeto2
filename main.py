@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QTimer,QMetaObject
 
 
 class MatrixApp(QWidget):
@@ -289,7 +289,11 @@ class MatrixApp(QWidget):
             else:
                 self.metodo_iterativo_widget.setVisible(False)
         if not self.isMaximized():
-            QTimer.singleShot(self.num_rows*4,self.adjustSize)
+            sucesso = QMetaObject.invokeMethod(self, "ajustar", Qt.ConnectionType.QueuedConnection)
+            if sucesso:
+                print("Sucesso :)")
+            else:
+                print("Fail :(")
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
@@ -400,6 +404,9 @@ class MatrixApp(QWidget):
         except Exception as e:
             QMessageBox.critical(self,"Erro",f"Dados inválidos, erro: {e}")
             return None,None,None
+
+    def ajustar(self):
+        self.adjustSize()
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
