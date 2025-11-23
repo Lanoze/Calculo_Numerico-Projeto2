@@ -290,8 +290,7 @@ class MatrixApp(QWidget):
             else:
                 self.metodo_iterativo_widget.setVisible(False)
         if not self.isMaximized():
-            print("Changing")
-            QTimer.singleShot(0,self.adjustSize)
+            QTimer.singleShot(self.num_rows*4,self.adjustSize)
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
