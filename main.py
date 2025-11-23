@@ -5,7 +5,7 @@ from metodos import eliminacao_gauss
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
 # --------------------------------------
-from MyWidgets import ResultadoIntegral
+from MyWidgets import ResultadoIntegral,DynamicStackedWidget
 
 import sys
 from PySide6.QtWidgets import (
@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QTimer
 from numexpr import evaluate as numEvaluate
 
 
@@ -21,7 +21,6 @@ class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Calculadora de métodos Numéricos")
-        self.setGeometry(100, 100, 400, 300)
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
@@ -41,7 +40,7 @@ class MatrixApp(QWidget):
         self.main_layout.addWidget(self.label_titulo)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
-        self.stacked_input_widget = QStackedWidget()
+        self.stacked_input_widget = DynamicStackedWidget()
         #self.stacked_input_widget.setSizePolicy(self.stacked_input_widget.sizePolicy().Maximum)
         #Colocar stretch no stacked_widget não funcionou
         self.main_layout.addWidget(self.stacked_input_widget)
@@ -251,6 +250,7 @@ class MatrixApp(QWidget):
 
         # --- NOVO: Conecta a mudança de metodo para alternar a entrada de dados ---
         self.menu_opcoes.currentTextChanged.connect(self.toggle_input_area)
+        self.move(100, 100)
 
     # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
@@ -295,7 +295,8 @@ class MatrixApp(QWidget):
                 self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
                 self.listLabel.setVisible(False); self.listInput.setVisible(False)
                 self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        #self.adjustSize()
+        if not self.isMaximized():
+            QTimer.singleShot(self.num_rows*4,self.adjustSize)
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
@@ -327,9 +328,6 @@ class MatrixApp(QWidget):
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = []
 
-        if not self.isMaximized():
-            self.adjustSize()
-
         for i in range(self.num_cols-1):
             new_variable = QLabel(f"X{i+1}")
             new_variable.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -351,6 +349,8 @@ class MatrixApp(QWidget):
             self.matrix_widgets.append(row_widgets) 
 
         self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        if not self.isMaximized():
+            QTimer.singleShot(self.num_rows*4,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
