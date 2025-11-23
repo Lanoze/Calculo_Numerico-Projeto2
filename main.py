@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt,QMetaObject
+from PySide6.QtCore import Qt,QTimer
 
 
 class MatrixApp(QWidget):
@@ -84,7 +84,8 @@ class MatrixApp(QWidget):
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
         matrix_page_layout.addLayout(resize_row)
-        metodo_iterativoLayout = QFormLayout()
+        self.metodo_iterativo_widget = QWidget()
+        metodo_iterativoLayout = QFormLayout(self.metodo_iterativo_widget)
         self.tolLabel = QLabel("Tolerância:")
         self.tolInput = QLineEdit()
         self.tolInput.setPlaceholderText("1e-6")
@@ -97,10 +98,8 @@ class MatrixApp(QWidget):
         self.iterInput = QLineEdit()
         self.iterInput.setPlaceholderText("100")
         metodo_iterativoLayout.addRow(self.iterLabel,self.iterInput)
-        self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
-        self.listLabel.setVisible(False); self.listInput.setVisible(False)
-        self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        matrix_page_layout.addLayout(metodo_iterativoLayout,stretch=1)
+        self.metodo_iterativo_widget.setVisible(False)
+        matrix_page_layout.addWidget(self.metodo_iterativo_widget,stretch=1)
 
         # matrix_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.matrix_page)  # Adiciona a primeira página
@@ -287,15 +286,13 @@ class MatrixApp(QWidget):
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
             if text in ("Jacobi","Gauss-Seidel"):
-                self.tolLabel.setVisible(True); self.tolInput.setVisible(True)
-                self.listLabel.setVisible(True); self.listInput.setVisible(True)
-                self.iterLabel.setVisible(True); self.iterInput.setVisible(True)
+                self.metodo_iterativo_widget.setVisible(True)
             else:
-                self.tolLabel.setVisible(False); self.tolInput.setVisible(False)
-                self.listLabel.setVisible(False); self.listInput.setVisible(False)
-                self.iterLabel.setVisible(False); self.iterInput.setVisible(False)
-        if not self.isMaximized(): #Garante que só ajusta o tamanho depois de terminar todas as mudanças da tela
-            QMetaObject.invokeMethod(self, "adjustSize", Qt.QueuedConnection)
+                self.metodo_iterativo_widget.setVisible(False)
+        if not self.isMaximized():
+            print("Changing")
+            QTimer.singleShot(0,self.adjustSize)
+        #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
 
@@ -308,7 +305,7 @@ class MatrixApp(QWidget):
                 self.clear_layout(item.layout())
 
     def sync_data_from_ui(self):
-        if not self.matrix_widgets: 
+        if not self.matrix_widgets:
             return
         for row in range(len(self.matrix_widgets)):
             for col in range(len(self.matrix_widgets[row])):
@@ -322,7 +319,7 @@ class MatrixApp(QWidget):
             for row in range(rows_to_copy):
                 for col in range(cols_to_copy):
                     new_data[row][col] = self.matrix_data[row][col]
-        self.matrix_data = new_data 
+        self.matrix_data = new_data
         self.clear_layout(self.matrix_grid_layout)
         self.matrix_widgets = []
 
@@ -336,7 +333,7 @@ class MatrixApp(QWidget):
         self.matrix_grid_layout.addWidget(label_b, 0, self.num_cols - 1)
 
         for row in range(1,self.num_rows):
-            row_widgets = [] 
+            row_widgets = []
             for col in range(self.num_cols):
                 line_edit = QLineEdit(self)
                 line_edit.setFixedSize(50, 30)
@@ -344,11 +341,11 @@ class MatrixApp(QWidget):
                 line_edit.setText(self.matrix_data[row-1][col])
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)
-            self.matrix_widgets.append(row_widgets) 
+            self.matrix_widgets.append(row_widgets)
 
         self.matrix_grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if not self.isMaximized():
-            QMetaObject.invokeMethod(self, "adjustSize", Qt.QueuedConnection)
+            QTimer.singleShot(0,self.adjustSize) #Pequeno atraso para conseguir ajustar para o tamanho correto
 
     def increase_dimensions(self):
         if (self.num_rows - 1) < self.MAX_VARIABLES:
