@@ -1,7 +1,6 @@
 # main.py
 #from logging import exception
 from auxiliares import formatar_expression,avaliar_expressao
-from metodos import eliminacao_gauss 
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
 # --------------------------------------
@@ -10,7 +9,7 @@ from MyWidgets import ResultadoIntegral,DynamicStackedWidget
 import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QStackedWidget, QGroupBox, QFormLayout,
+    QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QGroupBox, QFormLayout,
     QCheckBox
 )
 from PySide6.QtCore import Qt,QTimer
