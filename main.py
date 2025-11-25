@@ -529,10 +529,13 @@ class MatrixApp(QWidget):
                 try:
                     for i in range(numero_pontos):
                         x_pontos.append(ponto_atual)
-                        y_pontos[i] = float(y_pontos[i])
+                        y_pontos[i] = float(numEvaluate(formatar_expression(y_pontos[i]),local_dict={},global_dict={}))
+                        if math.isnan(y_pontos[i]) or math.isinf(y_pontos[i]):
+                            raise ValueError("Nan ou inf")
                         ponto_atual = lim_inferior + (i+1)*h
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
+                    return
             print(f"X = {x_pontos}")
             print(f"Y = {y_pontos}")
             # Necessário a cópia pois os metodos removem o ponto inicial e final de Y_pontos
