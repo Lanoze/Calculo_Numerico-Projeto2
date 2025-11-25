@@ -293,7 +293,7 @@ class MatrixApp(QWidget):
 
         if not self.isMaximized():
             QTimer.singleShot(0, lambda:
-            QTimer.singleShot(0, self.adjustSize))
+            QTimer.singleShot(30, self.adjustSize))
 
     def clear_layout(self, layout):
         while layout.count():
