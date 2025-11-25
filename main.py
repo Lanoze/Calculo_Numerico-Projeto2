@@ -1,7 +1,7 @@
 # main.py
 #from logging import exception
 import math
-import warnings
+import numpy as np
 
 from auxiliares import formatar_expression,avaliar_expressao
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
@@ -413,8 +413,6 @@ class MatrixApp(QWidget):
                 for col in range(len(self.matrix_widgets[row])):
                     try: #local_dict e global_dict vazios impedem que variáveis do programa sejam usadas
                         celula = float(numEvaluate(formatar_expression(self.matrix_widgets[row][col].text().replace(',', '.')),local_dict={},global_dict={}))
-                        if math.isnan(celula) or math.isinf(celula):
-                            raise ValueError("Nan ou inf")
                         linha.append(celula)
                     except Exception as e:
                         QMessageBox.critical(self,"Erro",f"Valor inválido na matriz: {e}")
@@ -530,8 +528,6 @@ class MatrixApp(QWidget):
                     for i in range(numero_pontos):
                         x_pontos.append(ponto_atual)
                         y_pontos[i] = float(numEvaluate(formatar_expression(y_pontos[i]),local_dict={},global_dict={}))
-                        if math.isnan(y_pontos[i]) or math.isinf(y_pontos[i]):
-                            raise ValueError("Nan ou inf")
                         ponto_atual = lim_inferior + (i+1)*h
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
@@ -550,7 +546,7 @@ class MatrixApp(QWidget):
 
 
 if __name__ == "__main__":
-    warnings.filterwarnings("ignore", category=RuntimeWarning, module="numexpr") #Ignora warnings de Nan do numexpr
+    np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()
