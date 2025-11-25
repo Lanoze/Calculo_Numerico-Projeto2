@@ -1,5 +1,7 @@
 # main.py
 #from logging import exception
+from PySide6 import QtCore
+
 from auxiliares import formatar_expression,avaliar_expressao
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
@@ -289,7 +291,7 @@ class MatrixApp(QWidget):
             else:
                 self.metodo_iterativo_widget.setVisible(False)
         if not self.isMaximized():
-            sucesso = QMetaObject.invokeMethod(self, "ajustar", Qt.ConnectionType.QueuedConnection)
+            sucesso = QMetaObject.invokeMethod(self, "adjustSize", Qt.ConnectionType.QueuedConnection)
             if sucesso:
                 print("Sucesso :)")
             else:
@@ -297,6 +299,9 @@ class MatrixApp(QWidget):
         #self.stacked_input_widget.adjustSize()
 
         # --------------------------------------
+    @QtCore.Slot()
+    def adjustSize(self):
+        super().adjustSize()
 
     def clear_layout(self, layout):
         while layout.count():
@@ -404,9 +409,6 @@ class MatrixApp(QWidget):
         except Exception as e:
             QMessageBox.critical(self,"Erro",f"Dados inválidos, erro: {e}")
             return None,None,None
-
-    def ajustar(self):
-        self.adjustSize()
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
