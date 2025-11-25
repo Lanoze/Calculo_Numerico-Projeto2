@@ -292,10 +292,8 @@ class MatrixApp(QWidget):
                 self.metodo_iterativo_widget.setVisible(False)
 
         if not self.isMaximized():
-            QTimer.singleShot(0,self.ajustarDepois)
-
-    def ajustarDepois(self):
-        QTimer.singleShot(0,self.adjustSize)
+            QTimer.singleShot(0, lambda:
+            QTimer.singleShot(0, self.adjustSize))
 
     def clear_layout(self, layout):
         while layout.count():
