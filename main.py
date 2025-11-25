@@ -411,8 +411,8 @@ class MatrixApp(QWidget):
             for row in range(len(self.matrix_widgets)):
                 linha = []
                 for col in range(len(self.matrix_widgets[row])):
-                    try:
-                        celula = float(numEvaluate(self.matrix_widgets[row][col].text().replace(',', '.')))
+                    try: #local_dict e global_dict vazios impedem que variáveis do programa sejam usadas
+                        celula = float(numEvaluate(formatar_expression(self.matrix_widgets[row][col].text().replace(',', '.')),local_dict={},global_dict={}))
                         if math.isnan(celula) or math.isinf(celula):
                             raise ValueError("Nan ou inf")
                         linha.append(celula)

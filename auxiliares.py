@@ -33,7 +33,7 @@ def trocar_linhas(sistema: list[list[float]], linha_i: int, linha_j: int):
 def avaliar_expressao(func: str, valor_x: float) -> float:
     func = func.lower() #Torna todos os caracteres minúsculos
     variavel = {'x': valor_x}
-    resultado = evaluate(func, local_dict=variavel).item()
+    resultado = evaluate(func, local_dict=variavel, global_dict={}).item()
     return resultado
 
 
