@@ -1,5 +1,7 @@
 # main.py
 #from logging import exception
+from PySide6 import QtCore
+
 from auxiliares import formatar_expression,avaliar_expressao
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
@@ -288,11 +290,11 @@ class MatrixApp(QWidget):
                 self.metodo_iterativo_widget.setVisible(True)
             else:
                 self.metodo_iterativo_widget.setVisible(False)
-        if not self.isMaximized():
-            QTimer.singleShot(self.num_rows*4,self.adjustSize)
-        #self.stacked_input_widget.adjustSize()
 
-        # --------------------------------------
+        if not self.isMaximized():
+            #Tive que colocar 30 ms de delay para evitar a "tremedeira"
+            QTimer.singleShot(0, lambda:
+            QTimer.singleShot(30, self.adjustSize))
 
     def clear_layout(self, layout):
         while layout.count():
@@ -378,11 +380,9 @@ class MatrixApp(QWidget):
         if checked:
             self.yLabel.setText("Função:")
             self.y_data_input.setPlaceholderText("Ex: e^x")
-            print("Caixinha ativada!")
         else:
             self.yLabel.setText("Pontos Y (separados por vírgula):")
             self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
-            print("Caixinha desativada!")
 
     def processar_dados_interpolacao(self):
         try:
