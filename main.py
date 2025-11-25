@@ -291,11 +291,9 @@ class MatrixApp(QWidget):
                 self.metodo_iterativo_widget.setVisible(True)
             else:
                 self.metodo_iterativo_widget.setVisible(False)
-
         if not self.isMaximized():
-            #Tive que colocar 30 ms de delay para evitar a "tremedeira"
-            QTimer.singleShot(0, lambda:
-            QTimer.singleShot(30, self.adjustSize))
+            self.stacked_input_widget.updateGeometry()
+            QTimer.singleShot(0,self.adjustSize)
 
     def clear_layout(self, layout):
         while layout.count():
