@@ -1,6 +1,7 @@
 # main.py
 #from logging import exception
-from PySide6 import QtCore
+import math
+import warnings
 
 from auxiliares import formatar_expression,avaliar_expressao
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
@@ -411,7 +412,10 @@ class MatrixApp(QWidget):
                 linha = []
                 for col in range(len(self.matrix_widgets[row])):
                     try:
-                        linha.append(float(numEvaluate(self.matrix_widgets[row][col].text().replace(',', '.'))))
+                        celula = float(numEvaluate(self.matrix_widgets[row][col].text().replace(',', '.')))
+                        if math.isnan(celula) or math.isinf(celula):
+                            raise ValueError("Nan ou inf")
+                        linha.append(celula)
                     except Exception as e:
                         QMessageBox.critical(self,"Erro",f"Valor inválido na matriz: {e}")
                         return
@@ -543,6 +547,7 @@ class MatrixApp(QWidget):
 
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore", category=RuntimeWarning, module="numexpr") #Ignora warnings de Nan do numexpr
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()
