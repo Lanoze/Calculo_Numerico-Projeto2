@@ -290,18 +290,12 @@ class MatrixApp(QWidget):
                 self.metodo_iterativo_widget.setVisible(True)
             else:
                 self.metodo_iterativo_widget.setVisible(False)
-        if not self.isMaximized():
-            sucesso = QMetaObject.invokeMethod(self, "adjustSize", Qt.ConnectionType.QueuedConnection)
-            if sucesso:
-                print("Sucesso :)")
-            else:
-                print("Fail :(")
-        #self.stacked_input_widget.adjustSize()
 
-        # --------------------------------------
-    @QtCore.Slot()
-    def adjustSize(self):
-        super().adjustSize()
+        if not self.isMaximized():
+            QTimer.singleShot(0,self.ajustarDepois)
+
+    def ajustarDepois(self):
+        QTimer.singleShot(0,self.adjustSize)
 
     def clear_layout(self, layout):
         while layout.count():
