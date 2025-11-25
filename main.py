@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt,QTimer,QMetaObject
+from PySide6.QtCore import Qt,QTimer
 
 
 class MatrixApp(QWidget):
