@@ -260,7 +260,6 @@ class MatrixApp(QWidget):
         # --- Interpolação (mantém sua lógica atual) ---
         if text in ["Lagrange", "Newton"]:
             self.label_titulo.setText("Interpolação")
-            #self.CBUsarFuncao.setVisible(False)
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
             self.xLabel.setText("Pontos X (separados por vírgula):")
             self.interpolation_group.setTitle("Dados para Interpolação (X, Y)")
@@ -386,12 +385,14 @@ class MatrixApp(QWidget):
 
     def processar_dados_interpolacao(self):
         try:
-            x = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
+            x = [float(numEvaluate(formatar_expression(v))) for v in self.x_data_input.text().split(',')]
+            print("Depois de formatado:")
+            print(x)
             if self.CBUsarFuncao.isChecked():
                 funcao = formatar_expression(self.y_data_input.text())
                 y = [avaliar_expressao(funcao,p) for p in x]
             else:
-                y = [float(v.replace(',', '.')) for v in self.y_data_input.text().split(',')]
+                y = [float(numEvaluate(formatar_expression(v))) for v in self.y_data_input.text().split(',')]
             x_interpolar = float(self.x_interpolar_input.text().replace(',', '.'))
             if len(x) != len(y):
                 QMessageBox.critical(self,"Erro","X e Y devem ter o mesmo tamanho.")
