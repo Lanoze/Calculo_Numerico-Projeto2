@@ -385,14 +385,14 @@ class MatrixApp(QWidget):
 
     def processar_dados_interpolacao(self):
         try:
-            x = [float(numEvaluate(formatar_expression(v))) for v in self.x_data_input.text().split(',')]
+            x = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.x_data_input.text().split(',')]
             print("Depois de formatado:")
             print(x)
             if self.CBUsarFuncao.isChecked():
                 funcao = formatar_expression(self.y_data_input.text())
                 y = [avaliar_expressao(funcao,p) for p in x]
             else:
-                y = [float(numEvaluate(formatar_expression(v))) for v in self.y_data_input.text().split(',')]
+                y = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.y_data_input.text().split(',')]
             x_interpolar = float(self.x_interpolar_input.text().replace(',', '.'))
             if len(x) != len(y):
                 QMessageBox.critical(self,"Erro","X e Y devem ter o mesmo tamanho.")
@@ -484,8 +484,8 @@ class MatrixApp(QWidget):
                 QMessageBox.critical(self,"Erro","Você precisa digitar exatamente 3 números")
                 return
             try:
-                x_dados[0] = float(numEvaluate(formatar_expression(x_dados[0])))
-                x_dados[1] = float(numEvaluate(formatar_expression(x_dados[1])))
+                x_dados[0] = float(numEvaluate(formatar_expression(x_dados[0]),local_dict={},global_dict={}))
+                x_dados[1] = float(numEvaluate(formatar_expression(x_dados[1]),local_dict={},global_dict={}))
                 x_dados[2] = int(x_dados[2])
             except Exception as e:
                 QMessageBox.critical(self,"Erro",f"Tipo de dado inválido: {e}")
