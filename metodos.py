@@ -87,19 +87,30 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     solucao_passo_a_passo.append(solucao.copy())
     #No momento a variável não serve pra nada, mas pode ser útil
     convergencia_garantida = True
+
     for i in range(len(sistema)):
-       # Verifica se a diagonal principal é nula
        if not diagDominante(sistema[i],i):
-           print(f"A linha {i} não é diagonal dominante")
-           for j in range(len(sistema)):
-               if i != j and diagDominante(sistema[i],j) and diagDominante(sistema[j],i):
-                   print(f"Conseguimos trocar a linha {i} e {j}")
+           convergencia_garantida = False
+           # print(f"A linha {i} não é diagonal dominante")
+           #Verifica as linhas acima, que já estão organizadas de modo a garantir a dominância diagonal
+           for j in range(i):
+               if diagDominante(sistema[j],i) and diagDominante(sistema[i],j):
+                   convergencia_garantida = True
+                   # print(f"Conseguimos trocar a linha {i} e {j}")
                    trocar_linhas(sistema,i,j)
                    break
-           else: #Caso não consiga achar uma linha para substituir
-               convergencia_garantida = False
-               print("\nImpossível atender o critério das linhas")
-               break # Poderia retornar uma mensagem de erro
+           else:
+               #Verifica as linhas abaixo, que ainda não foram organizadas para garantir a dominância diagonal
+               for j in range(i+1,len(sistema)):
+                   if diagDominante(sistema[j],i):
+                       trocar_linhas(sistema,i,j)
+                       # print(f"Conseguimos trocar a linha {i} e {j}")
+                       convergencia_garantida = True
+                       break
+               else:
+                   #print("\nImpossível de garantir o critério das linhas")
+                   break
+    print("\nConvergência garantida") if convergencia_garantida else print("\nImpossível de garantir o critério das linhas")
     print("Sistema após rearranjo:")
     print(sistema)
 

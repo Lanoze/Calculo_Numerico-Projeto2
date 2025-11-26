@@ -1,6 +1,6 @@
 # main.py
 #from logging import exception
-import math
+from warnings import filterwarnings
 import numpy as np
 
 from auxiliares import formatar_expression,avaliar_expressao
@@ -548,6 +548,7 @@ class MatrixApp(QWidget):
 
 if __name__ == "__main__":
     np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
+    filterwarnings("ignore", category=RuntimeWarning, module="numexpr") #Evita o
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()

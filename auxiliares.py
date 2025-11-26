@@ -85,7 +85,7 @@ def formatar_expression(expression: str) -> str:
         final_expression = final_expression.replace(key, value)
 
     final_expression = final_expression.replace('π', str(pi))
-    print(final_expression)
+    #print(final_expression)
 
     return final_expression
 
