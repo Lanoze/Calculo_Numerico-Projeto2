@@ -484,11 +484,11 @@ class MatrixApp(QWidget):
                 QMessageBox.critical(self,"Erro","Você precisa digitar exatamente 3 números")
                 return
             try:
-                x_dados[0] = float(x_dados[0])
-                x_dados[1] = float(x_dados[1])
+                x_dados[0] = float(numEvaluate(formatar_expression(x_dados[0])))
+                x_dados[1] = float(numEvaluate(formatar_expression(x_dados[1])))
                 x_dados[2] = int(x_dados[2])
-            except ValueError:
-                QMessageBox.critical(self,"Erro","Tipo de dado inválido")
+            except Exception as e:
+                QMessageBox.critical(self,"Erro",f"Tipo de dado inválido: {e}")
                 return
             lim_inferior,lim_superior,numero_pontos = x_dados
             if numero_pontos < 2:
