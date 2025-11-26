@@ -33,28 +33,35 @@ def trocar_linhas(sistema: list[list[float]], linha_i: int, linha_j: int):
 def avaliar_expressao(func: str, valor_x: float) -> float:
     func = func.lower() #Torna todos os caracteres minúsculos
     variavel = {'x': valor_x}
-    resultado = evaluate(func, local_dict=variavel).item()
+    resultado = evaluate(func, local_dict=variavel, global_dict={}).item()
     return resultado
 
 
 def formatar_expression(expression: str) -> str:
     sign = ('+', '-', '*', '/', ')')
 
-    special_funcs = {'@': 'e**', '$': 'sin', '#': 'cos', '%': 'tan',
-                     '!': 'log'}  # Transformar isso num dicionário e usar num loop para substituir
+    special_funcs = {'&':'arcsin','¨':'arccos','§':'arctan',
+                     '@': 'exp', '$': 'sin', '#': 'cos', '%': 'tan','!': 'log'}  # Transformar isso num dicionário e usar num loop para substituir
     constantes = ('π', 'e')
     expression = expression.strip().lower()
 
     # Retorna os asteriscos duplos
     expression = expression.replace('^', '**')
     expression = expression.replace('pi', 'π')
+    # expression = expression.replace('cosec','(1/sin)')
+    # expression = expression.replace('csc', '(1/sin)')
+    # expression = expression.replace('sec', '(1/cos)')
     expression = expression.replace('sen', 'sin')
     expression = expression.replace('ln', 'log')
     expression = expression.replace('tg', 'tan')
+    expression = expression.replace('atan', 'arctan')
+    expression = expression.replace('acos', 'arccos')
+    expression = expression.replace('asin', 'arcsin')
+    expression = expression.replace('e**', 'exp')
 
     for key, value in special_funcs.items():
         expression = expression.replace(value, key)
-    expression = expression.replace('exp', '@')
+    #expression = expression.replace('exp', '@')
 
     expression = expression.replace('²', '**2')
     expression = expression.replace('³', '**3')
@@ -74,16 +81,15 @@ def formatar_expression(expression: str) -> str:
     final_expression = final_expression.replace('e', str(e))
 
     for key, value in special_funcs.items():
+        final_expression = final_expression.replace(key + 'x', key + '(x)')
         final_expression = final_expression.replace(key, value)
 
-    final_expression = final_expression.replace('e**', 'exp')
-    final_expression = final_expression.replace('expx', 'exp(x)')
-    final_expression = final_expression.replace('sinx', 'sin(x)')
-    final_expression = final_expression.replace('cosx', 'cos(x)')
-    final_expression = final_expression.replace('tanx', 'tan(x)')
-    final_expression = final_expression.replace('logx', 'log(x)')
-
-    # print(f"Expressão final: {final_expression}")
     final_expression = final_expression.replace('π', str(pi))
+    print(final_expression)
 
     return final_expression
+
+if __name__ == "__main__":
+    # char = '§'
+    # print(f"'{char}' é alfa: {char.isalpha()}\n'{char}' é num: {char.isdigit()}")
+    print(evaluate("arctan(3)"))

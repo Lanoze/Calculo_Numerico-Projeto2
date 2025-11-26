@@ -1,6 +1,7 @@
 # main.py
 #from logging import exception
-from PySide6 import QtCore
+import math
+import numpy as np
 
 from auxiliares import formatar_expression,avaliar_expressao
 # --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
@@ -15,6 +16,7 @@ from PySide6.QtWidgets import (
     QCheckBox
 )
 from PySide6.QtCore import Qt,QTimer
+from numexpr import evaluate as numEvaluate
 
 
 class MatrixApp(QWidget):
@@ -258,7 +260,6 @@ class MatrixApp(QWidget):
         # --- Interpolação (mantém sua lógica atual) ---
         if text in ["Lagrange", "Newton"]:
             self.label_titulo.setText("Interpolação")
-            #self.CBUsarFuncao.setVisible(False)
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
             self.xLabel.setText("Pontos X (separados por vírgula):")
             self.interpolation_group.setTitle("Dados para Interpolação (X, Y)")
@@ -290,11 +291,9 @@ class MatrixApp(QWidget):
                 self.metodo_iterativo_widget.setVisible(True)
             else:
                 self.metodo_iterativo_widget.setVisible(False)
-
         if not self.isMaximized():
-            #Tive que colocar 30 ms de delay para evitar a "tremedeira"
-            QTimer.singleShot(0, lambda:
-            QTimer.singleShot(30, self.adjustSize))
+            self.stacked_input_widget.updateGeometry()
+            QTimer.singleShot(0,self.adjustSize)
 
     def clear_layout(self, layout):
         while layout.count():
@@ -386,12 +385,14 @@ class MatrixApp(QWidget):
 
     def processar_dados_interpolacao(self):
         try:
-            x = [float(v.replace(',', '.')) for v in self.x_data_input.text().split(',')]
+            x = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.x_data_input.text().split(',')]
+            print("Depois de formatado:")
+            print(x)
             if self.CBUsarFuncao.isChecked():
                 funcao = formatar_expression(self.y_data_input.text())
                 y = [avaliar_expressao(funcao,p) for p in x]
             else:
-                y = [float(v.replace(',', '.')) for v in self.y_data_input.text().split(',')]
+                y = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.y_data_input.text().split(',')]
             x_interpolar = float(self.x_interpolar_input.text().replace(',', '.'))
             if len(x) != len(y):
                 QMessageBox.critical(self,"Erro","X e Y devem ter o mesmo tamanho.")
@@ -411,10 +412,11 @@ class MatrixApp(QWidget):
             for row in range(len(self.matrix_widgets)):
                 linha = []
                 for col in range(len(self.matrix_widgets[row])):
-                    try:
-                        linha.append(float(self.matrix_widgets[row][col].text().replace(',', '.')))
-                    except ValueError:
-                        QMessageBox.critical(self,"Erro","Valor inválido na matriz.")
+                    try: #local_dict e global_dict vazios impedem que variáveis do programa sejam usadas
+                        celula = float(numEvaluate(formatar_expression(self.matrix_widgets[row][col].text().replace(',', '.')),local_dict={},global_dict={}))
+                        linha.append(celula)
+                    except Exception as e:
+                        QMessageBox.critical(self,"Erro",f"Valor inválido na matriz: {e}")
                         return
                 sistema.append(linha)
 
@@ -482,11 +484,11 @@ class MatrixApp(QWidget):
                 QMessageBox.critical(self,"Erro","Você precisa digitar exatamente 3 números")
                 return
             try:
-                x_dados[0] = float(x_dados[0])
-                x_dados[1] = float(x_dados[1])
+                x_dados[0] = float(numEvaluate(formatar_expression(x_dados[0]),local_dict={},global_dict={}))
+                x_dados[1] = float(numEvaluate(formatar_expression(x_dados[1]),local_dict={},global_dict={}))
                 x_dados[2] = int(x_dados[2])
-            except ValueError:
-                QMessageBox.critical(self,"Erro","Tipo de dado inválido")
+            except Exception as e:
+                QMessageBox.critical(self,"Erro",f"Tipo de dado inválido: {e}")
                 return
             lim_inferior,lim_superior,numero_pontos = x_dados
             if numero_pontos < 2:
@@ -526,10 +528,11 @@ class MatrixApp(QWidget):
                 try:
                     for i in range(numero_pontos):
                         x_pontos.append(ponto_atual)
-                        y_pontos[i] = float(y_pontos[i])
+                        y_pontos[i] = float(numEvaluate(formatar_expression(y_pontos[i]),local_dict={},global_dict={}))
                         ponto_atual = lim_inferior + (i+1)*h
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
+                    return
             print(f"X = {x_pontos}")
             print(f"Y = {y_pontos}")
             # Necessário a cópia pois os metodos removem o ponto inicial e final de Y_pontos
@@ -544,6 +547,7 @@ class MatrixApp(QWidget):
 
 
 if __name__ == "__main__":
+    np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()
