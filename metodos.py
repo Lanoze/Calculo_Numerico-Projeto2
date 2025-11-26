@@ -1,6 +1,6 @@
 
 # IMPORTANTE: Importa apenas as funções auxiliares que serão usadas pela Eliminação de Gauss
-from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar
+from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar,diagDominante
 from copy import deepcopy
 
 
@@ -85,18 +85,23 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
         solucao = [0]*len(sistema) #Caso o usuário não tenha digitado usa tudo 0
     solucao_passo_a_passo = []
     solucao_passo_a_passo.append(solucao.copy())
-
-    #todo Seria melhor o teste da diagonal dominante, mas deixa assim mesmo
+    #No momento a variável não serve pra nada, mas pode ser útil
+    convergencia_garantida = True
     for i in range(len(sistema)):
-        #Verifica se a diagonal principal é nula
-        if sistema[i][i] == 0:
-            for j in range(len(sistema)):
-                if sistema[j][i] != 0 and sistema[i][j] != 0: #Verifica se as diagonais de ambas as linha não vão zerar
-                    trocar_linhas(sistema,i,j)
-                    break
+       # Verifica se a diagonal principal é nula
+       if not diagDominante(sistema[i],i):
+           print(f"A linha {i} não é diagonal dominante")
+           for j in range(len(sistema)):
+               if i != j and diagDominante(sistema[i],j) and diagDominante(sistema[j],i):
+                   print(f"Conseguimos trocar a linha {i} e {j}")
+                   trocar_linhas(sistema,i,j)
+                   break
+           else: #Caso não consiga achar uma linha para substituir
+               convergencia_garantida = False
+               print("\nImpossível atender o critério das linhas")
+               break # Poderia retornar uma mensagem de erro
     print("Sistema após rearranjo:")
     print(sistema)
-
 
     iteration = 1
     while True:
