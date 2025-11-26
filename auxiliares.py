@@ -1,7 +1,5 @@
-# auxiliares.py
 from numexpr import evaluate
 from math import e,pi
-# --- Funções Auxiliares (OELs) --- 
 
 def somar_linhas(sistema, linha_destino, linha_origem, escalar):
     """

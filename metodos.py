@@ -3,9 +3,6 @@
 from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar,diagDominante
 from copy import deepcopy
 
-
-# --- Algoritmo Principal: Eliminação de Gauss ---
-
 def eliminacao_gauss(sistema: list[list[float]]):
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(deepcopy(sistema))
@@ -75,8 +72,6 @@ def eliminacao_jordan(sistema: list[list[float]]):
     print("Sistema como matriz identidade:")
     print(sistema)
     return resultado
-
-# ----- implementar métudo de Gauss-Seidel -----#
 
 def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     if valores_iniciais:
@@ -148,11 +143,9 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
         print(solucao_passo_a_passo)
         return solucao
 
-# ---- Implementando a Interpolação de Lagrange ---- #
-
 def interpolacao_lagrange(X, Y, x_interpolar):
     """
-    Calcula o valor interpolado P(x_interpolar) usando o método de Lagrange.
+    Calcula o valor interpolado P(x_interpolar) usando o méthodo de Lagrange.
     """
     n = len(X)
     
@@ -181,7 +174,7 @@ def interpolacao_lagrange(X, Y, x_interpolar):
 
 def interpolacao_newton(X, Y, x_interpolar):
     """
-    Calcula o valor interpolado P(x_interpolar) usando o método de Newton
+    Calcula o valor interpolado P(x_interpolar) usando o méthodo de Newton
     (Diferenças Divididas).
     """
     n = len(X)

@@ -1,12 +1,6 @@
-# main.py
-#from logging import exception
-from warnings import filterwarnings
 import numpy as np
-
 from auxiliares import formatar_expression,avaliar_expressao
-# --- NOVAS IMPORTAÇÕES NECESSÁRIAS ---
 from metodos import*
-# --------------------------------------
 from MyWidgets import ResultadoIntegral,DynamicStackedWidget
 
 import sys
@@ -107,9 +101,6 @@ class MatrixApp(QWidget):
         # matrix_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.matrix_page)  # Adiciona a primeira página
 
-        # =================================================================
-        # 2. Página de Entrada de Interpolação (Listas X, Y)
-        # =================================================================
         self.interpolation_page = QWidget()
         interp_page_layout = QVBoxLayout(self.interpolation_page)
 
@@ -128,7 +119,6 @@ class MatrixApp(QWidget):
 
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
-        # CORRECAO---------------------------------------------------------
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
         interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
 
@@ -138,20 +128,15 @@ class MatrixApp(QWidget):
         interp_page_layout.addWidget(self.CBUsarFuncao)
         interp_page_layout.addStretch(1)
         self.stacked_input_widget.addWidget(self.interpolation_page)  # Adiciona a segunda página
-        # =================================================================
-
-        # Linha de Cálculo
         calculo_row = QHBoxLayout()
         calculo_row.addStretch(1)
         self.menu_opcoes = QComboBox()
 
-        # Opcoes de metodos #
         self.menu_opcoes.addItems([
             "Gauss", "Jordan", "LU", "Jacobi","Gauss-Seidel",
             "Lagrange", "Newton", "Trapézio", "Simpson"
         ])
 
-        # #########################################################
         self.calculo_botao = QPushButton("Calcular")
         self.calculo_botao.clicked.connect(self.calcular)
         calculo_row.addWidget(self.menu_opcoes)
@@ -548,7 +533,6 @@ class MatrixApp(QWidget):
 
 if __name__ == "__main__":
     np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
-    filterwarnings("ignore", category=RuntimeWarning, module="numexpr") #Evita o
     app = QApplication(sys.argv)
     window = MatrixApp()
     window.show()
