@@ -9,7 +9,7 @@ from matplotlib.backends.backend_qtagg import (
 import sys
 
 class ResultadoIntegral(QDialog):
-    def __init__(self,titulo: str,parent,resultado: float,x_pontos: list[float],y_pontos: list[float]):
+    def __init__(self,parent,resultado: float,x_pontos: list[float],y_pontos: list[float], x_pontos_special = [], y_pontos_special = [],result_text = '',titulo = '',area = False):
         super().__init__(parent)
         self.setWindowTitle(titulo)
         self.setModal(True) #Bloqueia interação com a janela principal
@@ -41,10 +41,13 @@ class ResultadoIntegral(QDialog):
         ax.axvline(x=0, color='black')
 
         ax.plot(x_pontos,y_pontos,label="Pontos",marker='o')
-        ax.fill_between(x_pontos, y_pontos, color='blue', alpha=0.6, label='Área sob a curva')
+        if area:
+            ax.fill_between(x_pontos, y_pontos, color='blue', alpha=0.6, label='Área sob a curva')
+        if x_pontos_special and y_pontos_special:
+            ax.scatter(x_pontos_special,y_pontos_special, c=['red']*len(x_pontos_special)) #Sem s=100
         main_layout.addWidget(self.toolbar)
         main_layout.addWidget(self.canvas,stretch=1)
-        self.resultado = QLabel(f"A integral resultou em {resultado:.5f}")
+        self.resultado = QLabel(f"{result_text} {resultado:.6f}")
         self.resultado.setStyleSheet("font-size: 10pt;")
         button_row = QHBoxLayout()
         #button_row.addWidget(self.)

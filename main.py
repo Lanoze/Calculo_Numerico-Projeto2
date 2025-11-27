@@ -460,7 +460,8 @@ class MatrixApp(QWidget):
             x,y,x_interp = self.processar_dados_interpolacao()
             if x is None: return
             resultado = interpolacao_lagrange(x,y,x_interp) if metodo_selecionado=="Lagrange" else interpolacao_newton(x,y,x_interp)
-            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",f"P({x_interp}) ≈ {resultado:.6f}")
+            ResultadoIntegral(self, resultado, x, y, result_text='A interpolação resultou em',
+                              titulo='Resultado da Interpolação',x_pontos_special=[x_interp],y_pontos_special=[resultado]).exec()
             return
 
         elif metodo_selecionado in ["Trapézio","Simpson"]:
@@ -525,7 +526,7 @@ class MatrixApp(QWidget):
                 resultado = integracao_trapezio(y_pontos.copy(),h)
             else:
                 resultado = integracao_simpson(y_pontos.copy(),h)
-            ResultadoIntegral("Resultado da Integral",self, resultado,x_pontos,y_pontos).exec()
+            ResultadoIntegral(self, resultado,x_pontos,y_pontos, result_text='A integral resultou em', titulo='Resultado da Integral', area=True).exec()
 
 
 
