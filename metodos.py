@@ -32,7 +32,7 @@ def eliminacao_gauss(sistema: list[list[float]]):
             soma_numerador -= (equacao_reversa[j] * resultado[j-1])
         resultado.append(soma_numerador/equacao_reversa[1+i])
     resultado.reverse()
-    return resultado
+    return resultado, sistema_passo_a_passo
 
 def eliminacao_jordan(sistema: list[list[float]]):
     sistema_passo_a_passo = []
@@ -71,7 +71,7 @@ def eliminacao_jordan(sistema: list[list[float]]):
     sistema_passo_a_passo.append(deepcopy(sistema))
     print("Sistema como matriz identidade:")
     print(sistema)
-    return resultado
+    return resultado,sistema_passo_a_passo
 
 def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     if valores_iniciais:
@@ -137,11 +137,11 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
             break
 
     if iteration > max_iter:
-        return "Sistema não convergiu em iterações suficientes"
+        return "Sistema não convergiu em iterações suficientes", solucao_passo_a_passo
     else:
         print("Solução passo a passo de Gauss-Seidel:")
         print(solucao_passo_a_passo)
-        return solucao
+        return solucao, solucao_passo_a_passo
 
 def interpolacao_lagrange(X, Y, x_interpolar):
     """

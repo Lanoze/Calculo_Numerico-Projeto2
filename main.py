@@ -1,7 +1,7 @@
 import numpy as np
 from auxiliares import formatar_expression,avaliar_expressao
 from metodos import*
-from MyWidgets import ResultadoIntegral,DynamicStackedWidget
+from MyWidgets import*
 
 import sys
 from PySide6.QtWidgets import (
@@ -407,7 +407,7 @@ class MatrixApp(QWidget):
 
             try:
                 if metodo_selecionado == "Gauss":
-                    resultado = eliminacao_gauss(sistema)
+                    resultado, passo_a_passo = eliminacao_gauss(sistema)
                 elif metodo_selecionado == "Gauss-Seidel":
                     tol = self.tolInput.text()
                     if tol: #Se não for string vazia
@@ -426,11 +426,12 @@ class MatrixApp(QWidget):
                             resultado = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
                         else:
                             resultado = "Você não colocou o número correto de valores iniciais."
+                            passo_a_passo = []
                     else:
                         valores_iniciais = []
-                        resultado = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
+                        resultado, _ = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
                 elif metodo_selecionado == "Jordan":
-                    resultado = eliminacao_jordan(sistema)
+                    resultado, passo_a_passo = eliminacao_jordan(sistema)
             except Exception as e:
                 mensagem = f"Erro: {e}"
                 # --- INÍCIO DA CORREÇÃO ---
@@ -453,7 +454,10 @@ class MatrixApp(QWidget):
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
                 # Exibe o que quer que tenha acontecido
-            QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
+            if metodo_selecionado == "Gauss-Seidel":
+                QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
+            else:
+                ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
                 # --- FIM DA CORREÇÃO ---
 
         elif metodo_selecionado in ["Lagrange","Newton"]:
