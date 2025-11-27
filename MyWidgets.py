@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QTimer
 from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QStackedWidget, \
     QSizePolicy, QGridLayout, QWidget
 from matplotlib.figure import Figure
@@ -118,15 +118,22 @@ class ResultadoSistema(QDialog):
 
         main_layout = QVBoxLayout(self)
 
-        self.iterNumber = QLabel("Matriz organizada")
+        self.iterNumber = QLabel("Iteração 0")
+        self.iterNumber.hide()
 
         self.central_widget = QWidget()
         self.central_widget.hide()
         central_layout = QHBoxLayout(self.central_widget)
 
         self.previous_btn = QPushButton('<') #Depois eu penso em como customizar com QSS
+        self.previous_btn.setStyleSheet("font-weight: bold;font-size: 15px;")
         self.previous_btn.setEnabled(False)
         self.next_btn = QPushButton('>')
+        self.next_btn.setStyleSheet("font-weight: bold;font-size: 15px;")
+
+        if len(self.paginas) <= 1:
+            self.next_btn.hide()
+            self.previous_btn.hide()
 
         self.alternar_btn = QPushButton("Passo-a-passo")
 
@@ -135,18 +142,21 @@ class ResultadoSistema(QDialog):
         for i in range(number_variables):
             new_variable = QLabel(f"X{i+1}")
             new_variable.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            new_variable.setStyleSheet("font-size: 16px;font-weight: bold;")
             self.matrix.addWidget(new_variable, 0, i)
 
         label_b = QLabel("B")
         label_b.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label_b.setStyleSheet("font-size: 16px;font-weight: bold;")
         self.matrix.addWidget(label_b, 0, number_variables)
         self.label_matrix = []
         matriz_atual = self.paginas[0] #passo_a_passo é uma lista tripla, considerando não-iterativo
         for i in range(number_variables):
             linha = []
             for j in range(number_variables+1):
-                new_label = QLabel(f"{matriz_atual[i][j]}")
+                new_label = QLabel(f"{matriz_atual[i][j]:.3g}")
                 new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
                 linha.append(new_label)
                 self.matrix.addWidget(new_label, i+1, j)
             self.label_matrix.append(linha)
@@ -193,7 +203,7 @@ class ResultadoSistema(QDialog):
             self.previous_btn.setEnabled(False)
         elif self.current_page == len(self.paginas)-1:
             self.next_btn.setEnabled(False)
-
+        self.iterNumber.setText(f"Iteração {self.current_page}")
         for i in range(len(self.label_matrix)):
             for j in range(len(self.label_matrix[i])):
                 self.label_matrix[i][j].setText(f"{self.paginas[self.current_page][i][j]:.3g}")
@@ -202,12 +212,17 @@ class ResultadoSistema(QDialog):
         if self.alternar_btn.text() == "Passo-a-passo":
             self.resultLabel.hide()
             self.central_widget.show()
+            self.iterNumber.show()
             self.alternar_btn.setText("Resultado")
         else:
             self.resultLabel.show()
             self.central_widget.hide()
+            self.iterNumber.hide()
             self.alternar_btn.setText("Passo-a-passo")
-        self.adjustSize()
+        self.central_widget.updateGeometry()
+        self.resultLabel.updateGeometry()
+        self.iterNumber.updateGeometry()
+        QTimer.singleShot(0,self.adjustSize)
 
 
 

@@ -454,7 +454,7 @@ class MatrixApp(QWidget):
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
                 # Exibe o que quer que tenha acontecido
-            if metodo_selecionado == "Gauss-Seidel":
+            if metodo_selecionado in ("Gauss-Seidel","Jacobi","LU"):
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
                 ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
