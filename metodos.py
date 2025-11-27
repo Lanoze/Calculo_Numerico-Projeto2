@@ -1,10 +1,7 @@
 
 # IMPORTANTE: Importa apenas as funções auxiliares que serão usadas pela Eliminação de Gauss
-from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar
+from auxiliares import somar_linhas, trocar_linhas, multiplicar_linha_por_escalar,diagDominante
 from copy import deepcopy
-
-
-# --- Algoritmo Principal: Eliminação de Gauss ---
 
 def eliminacao_gauss(sistema: list[list[float]]):
     sistema_passo_a_passo = []
@@ -76,8 +73,6 @@ def eliminacao_jordan(sistema: list[list[float]]):
     print(sistema)
     return resultado
 
-# ----- implementar métudo de Gauss-Seidel -----#
-
 def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     if valores_iniciais:
         solucao = valores_iniciais #Caso o usuário tenha digitado
@@ -85,18 +80,34 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
         solucao = [0]*len(sistema) #Caso o usuário não tenha digitado usa tudo 0
     solucao_passo_a_passo = []
     solucao_passo_a_passo.append(solucao.copy())
+    #No momento a variável não serve pra nada, mas pode ser útil
+    convergencia_garantida = True
 
-    #todo Seria melhor o teste da diagonal dominante, mas deixa assim mesmo
     for i in range(len(sistema)):
-        #Verifica se a diagonal principal é nula
-        if sistema[i][i] == 0:
-            for j in range(len(sistema)):
-                if sistema[j][i] != 0 and sistema[i][j] != 0: #Verifica se as diagonais de ambas as linha não vão zerar
-                    trocar_linhas(sistema,i,j)
-                    break
+       if not diagDominante(sistema[i],i):
+           convergencia_garantida = False
+           # print(f"A linha {i} não é diagonal dominante")
+           #Verifica as linhas acima, que já estão organizadas de modo a garantir a dominância diagonal
+           for j in range(i):
+               if diagDominante(sistema[j],i) and diagDominante(sistema[i],j):
+                   convergencia_garantida = True
+                   # print(f"Conseguimos trocar a linha {i} e {j}")
+                   trocar_linhas(sistema,i,j)
+                   break
+           else:
+               #Verifica as linhas abaixo, que ainda não foram organizadas para garantir a dominância diagonal
+               for j in range(i+1,len(sistema)):
+                   if diagDominante(sistema[j],i):
+                       trocar_linhas(sistema,i,j)
+                       # print(f"Conseguimos trocar a linha {i} e {j}")
+                       convergencia_garantida = True
+                       break
+               else:
+                   #print("\nImpossível de garantir o critério das linhas")
+                   break
+    print("\nConvergência garantida") if convergencia_garantida else print("\nImpossível de garantir o critério das linhas")
     print("Sistema após rearranjo:")
     print(sistema)
-
 
     iteration = 1
     while True:
@@ -132,11 +143,9 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
         print(solucao_passo_a_passo)
         return solucao
 
-# ---- Implementando a Interpolação de Lagrange ---- #
-
 def interpolacao_lagrange(X, Y, x_interpolar):
     """
-    Calcula o valor interpolado P(x_interpolar) usando o método de Lagrange.
+    Calcula o valor interpolado P(x_interpolar) usando o méthodo de Lagrange.
     """
     n = len(X)
     
@@ -165,7 +174,7 @@ def interpolacao_lagrange(X, Y, x_interpolar):
 
 def interpolacao_newton(X, Y, x_interpolar):
     """
-    Calcula o valor interpolado P(x_interpolar) usando o método de Newton
+    Calcula o valor interpolado P(x_interpolar) usando o méthodo de Newton
     (Diferenças Divididas).
     """
     n = len(X)

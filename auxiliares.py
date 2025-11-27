@@ -1,7 +1,5 @@
-# auxiliares.py
 from numexpr import evaluate
 from math import e,pi
-# --- Funções Auxiliares (OELs) --- 
 
 def somar_linhas(sistema, linha_destino, linha_origem, escalar):
     """
@@ -85,11 +83,25 @@ def formatar_expression(expression: str) -> str:
         final_expression = final_expression.replace(key, value)
 
     final_expression = final_expression.replace('π', str(pi))
-    print(final_expression)
+    #print(final_expression)
 
     return final_expression
+
+def diagDominante(linha: list[float], index_diagonal: int) -> bool:
+    soma_absoluta = 0
+    for i in range(index_diagonal):
+        soma_absoluta += abs(linha[i])
+    #O termo independente não faz parte da soma absoluta
+    for i in range(index_diagonal+1,len(linha)-1):
+        soma_absoluta += abs(linha[i])
+    return abs(linha[index_diagonal]) > soma_absoluta
 
 if __name__ == "__main__":
     # char = '§'
     # print(f"'{char}' é alfa: {char.isalpha()}\n'{char}' é num: {char.isdigit()}")
-    print(evaluate("arctan(3)"))
+
+    # print(evaluate("arctan(3)"))
+    # linha = [2,-5,50,4,200.5]
+    # linha = [30,-2,-6,50,300]
+    linha = [7,60,10,15,-400]
+    print(diagDominante(linha, 1))
