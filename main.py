@@ -31,9 +31,19 @@ class MatrixApp(QWidget):
         #self.setup_ui()
         self.main_layout = QVBoxLayout(self)  # Empilha verticalmente os elementos
         # self.main_layout.addStretch(1)
+        layout_superior = QHBoxLayout()
+        self.clear_btn = QPushButton("Clear")
+        self.clear_btn.setFixedSize(50, 20)
+        self.clear_btn.clicked.connect(self.clear)
+        layout_superior.addWidget(self.clear_btn)
         self.label_titulo = QLabel("Solucionador de sistema linear")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.main_layout.addWidget(self.label_titulo)
+        layout_superior.addWidget(self.label_titulo)
+        self.set_btn = QPushButton("Settar")
+        self.set_btn.setFixedSize(50, 20)
+        self.set_btn.clicked.connect(self.settar)
+        layout_superior.addWidget(self.set_btn)
+        self.main_layout.addLayout(layout_superior)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = DynamicStackedWidget()
@@ -386,6 +396,33 @@ class MatrixApp(QWidget):
         except Exception as e:
             QMessageBox.critical(self,"Erro",f"Dados inválidos, erro: {e}")
             return None,None,None
+
+    def clear(self):
+        metodo_selecionado = self.menu_opcoes.currentText()
+        if metodo_selecionado in ("Gauss","Jordan","Jacobi","Gauss-Seidel","LU"):
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText('0')
+            if metodo_selecionado in ("Jacobi","Gauss-Seidel"):
+                self.tolInput.setText('')
+                self.listInput.setText('')
+                self.iterInput.setText('')
+
+
+    def settar(self):
+        metodo_selecionado = self.menu_opcoes.currentText()
+        if metodo_selecionado in ("Gauss","Jordan","LU"):
+            if self.num_rows-1 != 3:
+                resize_antigo = self.resize_input.text()
+                self.resize_input.setText('3')
+                self.resize_matrix()
+                self.resize_input.setText(resize_antigo)
+            dados_matriz = [['0.55','0.25','0.25','4800'],
+                            ['0.30','0.45','0.20','5800'],
+                            ['0.15','0.30','0.55','5700']]
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText(dados_matriz[i][j])
 
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
