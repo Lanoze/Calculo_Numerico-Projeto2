@@ -22,9 +22,11 @@ class MatrixApp(QWidget):
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
         self.num_cols = 3 #Geralmente num_cols seria igual a num_linhas+1
         self.metodo_atual = "Gauss"
+        #Salva os inputs de interpolação
         self.interp_x_texto = ''
         self.interp_y_texto = ''
         self.interp_usarFuncao = False
+        #Salva os inputs de integração
         self.integ_x_texto = ''
         self.integ_y_texto = ''
         self.integ_usarFuncao = False
@@ -432,9 +434,14 @@ class MatrixApp(QWidget):
                 for j in range(len(self.matrix_widgets[0])):
                     self.matrix_widgets[i][j].setText('0')
             if metodo_selecionado in ("Jacobi","Gauss-Seidel"):
-                self.tolInput.setText('')
-                self.listInput.setText('')
-                self.iterInput.setText('')
+                self.tolInput.clear()
+                self.listInput.clear()
+                self.iterInput.clear()
+        elif metodo_selecionado in ("Lagrange", "Newton","Trapézio", "Simpson"):
+            self.x_data_input.clear()
+            self.y_data_input.clear()
+            if metodo_selecionado in ("Lagrange", "Newton"):
+                self.x_interpolar_input.clear()
 
 
     def settar(self):
