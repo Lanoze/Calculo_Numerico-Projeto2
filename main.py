@@ -460,6 +460,8 @@ class MatrixApp(QWidget):
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
                 if metodo_selecionado == "Gauss-Seidel":
+                    print("Passo a passo:")
+                    print(passo_a_passo)
                     ResultadoSistemaIterativo(self,self.num_rows-1,mensagem,passo_a_passo,matrix_organizada,diferencas,f"Resultado - {metodo_selecionado}").exec()
                 else:
                     ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()

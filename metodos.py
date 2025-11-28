@@ -139,11 +139,12 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
         if iteration > max_iter or maior_diferenca/maior_variavel <= tol:
             break
 
+    # print("Solução passo a passo de Gauss-Seidel:")
+    # print(solucao_passo_a_passo)
+
     if iteration > max_iter:
         return "Sistema não convergiu em iterações suficientes", solucao_passo_a_passo, sistema_rearranjado, diferencas
     else:
-        print("Solução passo a passo de Gauss-Seidel:")
-        print(solucao_passo_a_passo)
         return solucao, solucao_passo_a_passo, sistema_rearranjado, diferencas
 
 def interpolacao_lagrange(X, Y, x_interpolar):

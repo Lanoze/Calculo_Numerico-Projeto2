@@ -236,6 +236,7 @@ class ResultadoSistemaIterativo(QDialog):
         main_layout = QVBoxLayout(self)
 
         self.iterNumber = QLabel("Matriz reorganizada")
+        self.iterNumber.hide()
         self.central_widget = QWidget()
         self.central_widget.hide()
         self.central_layout = QHBoxLayout(self.central_widget)
@@ -356,7 +357,7 @@ class ResultadoSistemaIterativo(QDialog):
             self.stacked_central.setCurrentWidget(self.widgetMatrizSistema)
             self.previous_btn.setEnabled(False)
             self.iterNumber.setText("Matriz reorganizada")
-        elif self.current_page == len(self.paginas) - 1:
+        elif self.current_page == len(self.paginas): #Como eu acesso os índices subtraindo 1, pra acessar o último elemento eu coloco sem -1 aqui
             self.next_btn.setEnabled(False)
 
         if self.current_page > 0:
@@ -364,7 +365,10 @@ class ResultadoSistemaIterativo(QDialog):
 
             for i in range(len(self.resultLabelList)-1):
                 self.resultLabelList[i].setText(f"{self.paginas[self.current_page-1][i]:.3g}")
-            self.resultLabelList[-1].setText(f"{self.differences[self.current_page-1]:.3g}")
+            if self.current_page > 1:
+                self.resultLabelList[-1].setText(f"{self.differences[self.current_page-2]:.3g}")
+            else:
+                self.resultLabelList[-1].setText("-")
 
     def alternar(self):
         if self.alternar_btn.text() == "Passo-a-passo":
