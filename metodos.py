@@ -108,7 +108,9 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
     print("\nConvergência garantida") if convergencia_garantida else print("\nImpossível de garantir o critério das linhas")
     print("Sistema após rearranjo:")
     print(sistema)
+    sistema_rearranjado = sistema
 
+    diferencas = []
     iteration = 1
     while True:
         #Equação de cada variável
@@ -131,17 +133,18 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
             if abs(solucao_passo_a_passo[iteration][j]) > maior_variavel:
                 maior_variavel = abs(solucao_passo_a_passo[iteration][j])
         print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
+        diferencas.append(maior_diferenca/maior_variavel)
         iteration += 1
         #Critério de saída
         if iteration > max_iter or maior_diferenca/maior_variavel <= tol:
             break
 
     if iteration > max_iter:
-        return "Sistema não convergiu em iterações suficientes", solucao_passo_a_passo
+        return "Sistema não convergiu em iterações suficientes", solucao_passo_a_passo, sistema_rearranjado, diferencas
     else:
         print("Solução passo a passo de Gauss-Seidel:")
         print(solucao_passo_a_passo)
-        return solucao, solucao_passo_a_passo
+        return solucao, solucao_passo_a_passo, sistema_rearranjado, diferencas
 
 def interpolacao_lagrange(X, Y, x_interpolar):
     """

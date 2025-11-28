@@ -125,7 +125,7 @@ class ResultadoSistema(QDialog):
         self.central_widget.hide()
         central_layout = QHBoxLayout(self.central_widget)
 
-        self.previous_btn = QPushButton('<') #Depois eu penso em como customizar com QSS
+        self.previous_btn = QPushButton('<')
         self.previous_btn.setStyleSheet("font-weight: bold;font-size: 15px;")
         self.previous_btn.setEnabled(False)
         self.next_btn = QPushButton('>')
@@ -177,20 +177,20 @@ class ResultadoSistema(QDialog):
 
 
         self.setStyleSheet('''
-                                                    QPushButton{
-                                                    font-size: 15px;
-                                                    background-color: #5B92A8
-                                                    }
-                                                    QPushButton:hover{
-                                                    background-color: #4D7C94
-                                                    }
-                                                    QPushButton:focus {
-                                                    outline: none;
-                                                    }
-                                                    ResultadoSistema{
-                                                    background-color: #A6C0ED
-                                                    }
-                                                ''')
+                                QPushButton{
+                                font-size: 15px;
+                                background-color: #5B92A8
+                                }
+                                QPushButton:hover{
+                                background-color: #4D7C94
+                                }
+                                QPushButton:focus {
+                                outline: none;
+                                }
+                                ResultadoSistema{
+                                background-color: #A6C0ED
+                                }
+                                ''')
 
     def mudar_pagina(self):
         if self.sender() == self.next_btn:
@@ -224,7 +224,163 @@ class ResultadoSistema(QDialog):
         self.iterNumber.updateGeometry()
         QTimer.singleShot(0,self.adjustSize)
 
+class ResultadoSistemaIterativo(QDialog):
+    def __init__(self,parent, number_variables: int, resultado: str,passo_a_passo=[],
+                 matriz_organizada = [], diferencas_relativas=[],titulo_janela = ''):
+        super().__init__(parent)
+        self.setWindowTitle(titulo_janela)
+        self.current_page = 0
+        self.paginas = passo_a_passo
+        self.differences = diferencas_relativas #Teoricamente tem um elemento a menos que páginas
 
+        main_layout = QVBoxLayout(self)
+
+        self.iterNumber = QLabel("Matriz reorganizada")
+        self.central_widget = QWidget()
+        self.central_widget.hide()
+        self.central_layout = QHBoxLayout(self.central_widget)
+
+        self.previous_btn = QPushButton('<')
+        self.previous_btn.setStyleSheet("font-weight: bold;font-size: 15px;")
+        self.previous_btn.setEnabled(False)
+        self.next_btn = QPushButton('>')
+        self.next_btn.setStyleSheet("font-weight: bold;font-size: 15px;")
+
+        if len(self.paginas) <= 1:
+            self.next_btn.hide()
+            self.previous_btn.hide()
+
+        self.stacked_central = DynamicStackedWidget()
+
+        self.alternar_btn = QPushButton("Passo-a-passo")
+
+        self.widgetMatrizSistema = QWidget()
+        self.layoutMatrizSistema = QGridLayout(self.widgetMatrizSistema)
+
+        self.widgetResultado = QWidget()
+        self.layoutResultado = QGridLayout(self.widgetResultado)
+
+        #Preencher a matriz do sistema
+        for i in range(number_variables):
+            new_variable = QLabel(f"X{i+1}")
+            new_variable.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            new_variable.setStyleSheet("font-size: 16px;font-weight: bold;")
+            self.layoutMatrizSistema.addWidget(new_variable, 0, i)
+        label_b = QLabel("B")
+        label_b.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label_b.setStyleSheet("font-size: 16px;font-weight: bold;")
+        self.layoutMatrizSistema.addWidget(label_b, 0, number_variables)
+        self.label_matrix = [] #Talvez não precise disso
+        for i in range(number_variables):
+            linha = []
+            for j in range(number_variables+1):
+                new_label = QLabel(f"{matriz_organizada[i][j]:.3g}")
+                new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
+                linha.append(new_label)
+                self.layoutMatrizSistema.addWidget(new_label, i+1, j)
+            self.label_matrix.append(linha)
+        self.resultLabel = QLabel(resultado)
+
+        #Preencher a iteração 0 dos resultados
+        for i in range(number_variables):
+            new_variable = QLabel(f"X{i + 1}")
+            new_variable.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            new_variable.setStyleSheet("font-size: 16px;font-weight: bold;")
+            self.layoutResultado.addWidget(new_variable, 0, i)
+        label_dif = QLabel("Dif")
+        label_dif.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label_dif.setStyleSheet("font-size: 16px;font-weight: bold;")
+        self.layoutResultado.addWidget(label_dif, 0, number_variables)
+
+        self.resultLabelList = []
+        for i in range(number_variables):
+            new_label = QLabel(f"{passo_a_passo[0][i]:.3g}")
+            new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
+            self.resultLabelList.append(new_label)
+            self.layoutResultado.addWidget(new_label, 1, i)
+
+        label_dif_valor = QLabel(f"{diferencas_relativas[0]:.3g}")
+        label_dif_valor.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label_dif_valor.setStyleSheet("font-size: 16px; background-color: white; color: black;")
+        self.resultLabelList.append(label_dif_valor)
+        self.layoutResultado.addWidget(label_dif_valor, 1, number_variables)
+
+        self.resultLabelPrincipal = QLabel(resultado)
+        self.alternar_btn = QPushButton("Passo-a-passo")
+
+        main_layout.addWidget(self.iterNumber)
+
+        self.central_layout.addWidget(self.previous_btn)
+        self.central_layout.addWidget(self.stacked_central)
+        self.central_layout.addWidget(self.next_btn)
+        main_layout.addWidget(self.central_widget)
+
+        self.stacked_central.addWidget(self.widgetMatrizSistema)
+        self.stacked_central.addWidget(self.widgetResultado)
+
+        main_layout.addWidget(self.resultLabelPrincipal)
+        main_layout.addWidget(self.alternar_btn)
+
+        self.previous_btn.clicked.connect(self.mudar_pagina)
+        self.next_btn.clicked.connect(self.mudar_pagina)
+        self.alternar_btn.clicked.connect(self.alternar)
+
+        self.setStyleSheet('''
+                                        QPushButton{
+                                        font-size: 15px;
+                                        background-color: #5B92A8
+                                        }
+                                        QPushButton:hover{
+                                        background-color: #4D7C94
+                                        }
+                                        QPushButton:focus {
+                                        outline: none;
+                                        }
+                                        ResultadoSistemaIterativo{
+                                        background-color: #A6C0ED
+                                        }
+                                        ''')
+
+    def mudar_pagina(self):
+        if self.sender() == self.next_btn:
+            self.current_page += 1
+            self.previous_btn.setEnabled(True)
+            self.stacked_central.setCurrentWidget(self.widgetResultado)
+        else:
+            self.current_page -= 1
+            self.next_btn.setEnabled(True)
+
+        if self.current_page == 0:
+            self.stacked_central.setCurrentWidget(self.widgetMatrizSistema)
+            self.previous_btn.setEnabled(False)
+            self.iterNumber.setText("Matriz reorganizada")
+        elif self.current_page == len(self.paginas) - 1:
+            self.next_btn.setEnabled(False)
+
+        if self.current_page > 0:
+            self.iterNumber.setText(f"Iteração {self.current_page - 1}")
+
+            for i in range(len(self.resultLabelList)-1):
+                self.resultLabelList[i].setText(f"{self.paginas[self.current_page-1][i]:.3g}")
+            self.resultLabelList[-1].setText(f"{self.differences[self.current_page-1]:.3g}")
+
+    def alternar(self):
+        if self.alternar_btn.text() == "Passo-a-passo":
+            self.resultLabelPrincipal.hide()
+            self.central_widget.show()
+            self.iterNumber.show()
+            self.alternar_btn.setText("Resultado")
+        else:
+            self.resultLabelPrincipal.show()
+            self.central_widget.hide()
+            self.iterNumber.hide()
+            self.alternar_btn.setText("Passo-a-passo")
+        self.central_widget.updateGeometry()
+        self.resultLabelPrincipal.updateGeometry()
+        self.iterNumber.updateGeometry()
+        QTimer.singleShot(0,self.adjustSize)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

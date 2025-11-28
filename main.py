@@ -390,6 +390,7 @@ class MatrixApp(QWidget):
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
+        numero_de_valores_iniciais_errado = False # Usado somente em Gauss-Seidel
         if metodo_selecionado in ("Jacobi","LU"):
             resultado = "Método ainda não implementado"
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
@@ -423,13 +424,14 @@ class MatrixApp(QWidget):
                     if valores_iniciais:
                         valores_iniciais = [float(x) for x in self.listInput.text().split(',')]
                         if len(valores_iniciais) == self.num_rows - 1:
-                            resultado = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
+                            resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
                         else:
                             resultado = "Você não colocou o número correto de valores iniciais."
-                            passo_a_passo = []
+                            # passo_a_passo = []
+                            numero_de_valores_iniciais_errado = True
                     else:
                         valores_iniciais = []
-                        resultado, _ = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
+                        resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
                 elif metodo_selecionado == "Jordan":
                     resultado, passo_a_passo = eliminacao_jordan(sistema)
             except Exception as e:
@@ -454,10 +456,13 @@ class MatrixApp(QWidget):
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
                 # Exibe o que quer que tenha acontecido
-            if metodo_selecionado in ("Gauss-Seidel","Jacobi","LU"):
+            if metodo_selecionado in ("Jacobi","LU") or numero_de_valores_iniciais_errado:
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
-                ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
+                if metodo_selecionado == "Gauss-Seidel":
+                    ResultadoSistemaIterativo(self,self.num_rows-1,mensagem,passo_a_passo,matrix_organizada,diferencas,f"Resultado - {metodo_selecionado}").exec()
+                else:
+                    ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
                 # --- FIM DA CORREÇÃO ---
 
         elif metodo_selecionado in ["Lagrange","Newton"]:
