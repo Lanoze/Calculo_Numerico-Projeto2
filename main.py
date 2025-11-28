@@ -21,6 +21,13 @@ class MatrixApp(QWidget):
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
         self.num_cols = 3 #Geralmente num_cols seria igual a num_linhas+1
+        self.metodo_atual = "Gauss"
+        self.interp_x_texto = ''
+        self.interp_y_texto = ''
+        self.interp_usarFuncao = False
+        self.integ_x_texto = ''
+        self.integ_y_texto = ''
+        self.integ_usarFuncao = False
         self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
 
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
@@ -127,6 +134,7 @@ class MatrixApp(QWidget):
         self.yLabel = QLabel("Pontos Y (separados por vírgula):")
         interp_layout.addRow(self.yLabel, self.y_data_input)
 
+        #O ponto x o qual queremos achar o valor do polinômio
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
@@ -251,9 +259,18 @@ class MatrixApp(QWidget):
     # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
         """Alterna entre a interface da Matriz e a interface de Interpolação ou Integração."""
+        #Garante que os inputs dos métodos de interpolação e integração sejam diferentes
+        if self.metodo_atual in ("Lagrange", "Newton"):
+            self.interp_x_texto = self.x_data_input.text()
+            self.interp_y_texto = self.y_data_input.text()
+            self.interp_usarFuncao = self.CBUsarFuncao.isChecked()
+        elif self.metodo_atual in ("Trapézio", "Simpson"):
+            self.integ_x_texto = self.x_data_input.text()
+            self.integ_y_texto = self.y_data_input.text()
+            self.integ_usarFuncao = self.CBUsarFuncao.isChecked()
 
-        # --- Interpolação (mantém sua lógica atual) ---
-        if text in ["Lagrange", "Newton"]:
+        # Interpolação
+        if text in ("Lagrange", "Newton"):
             self.label_titulo.setText("Interpolação")
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
             self.xLabel.setText("Pontos X (separados por vírgula):")
@@ -261,11 +278,16 @@ class MatrixApp(QWidget):
             # Mantém placeholders originais para interpolação
             # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            if self.metodo_atual not in ("Lagrange", "Newton"): #Não atualiza se já estava num méthodo de interpolação
+                self.x_data_input.setText(self.interp_x_texto)
+                self.y_data_input.setText(self.interp_y_texto)
+                self.CBUsarFuncao.setChecked(self.interp_usarFuncao)
+
             self.x_interpolar_input.show()  # mostrar novamente se estava oculto
             self.label_x_interpolar.show()
 
-        # --- Integração Numérica (nova parte corrigida) ---
-        elif text in ["Trapézio", "Simpson"]:
+        # Integração
+        elif text in ("Trapézio", "Simpson"):
             self.label_titulo.setText("Integração Numérica")
             self.interpolation_group.setTitle("Dados para Integração (X, Y)")
             #self.CBUsarFuncao.setVisible(True)
@@ -275,10 +297,15 @@ class MatrixApp(QWidget):
             self.xLabel.setText("Limites e número de pontos: ")
             # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            if self.metodo_atual not in ("Trapézio", "Simpson"):#Não atualiza se já estava num méthodo de integração
+                self.x_data_input.setText(self.integ_x_texto)
+                self.y_data_input.setText(self.integ_y_texto)
+                self.CBUsarFuncao.setChecked(self.integ_usarFuncao)
+
             self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
             self.label_x_interpolar.hide()
 
-        # --- Sistemas Lineares (mantém sua lógica original) ---
+        #Sistemas Lineares
         else:
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
@@ -289,6 +316,7 @@ class MatrixApp(QWidget):
         if not self.isMaximized():
             self.stacked_input_widget.updateGeometry()
             QTimer.singleShot(0,self.adjustSize)
+        self.metodo_atual = text #Atualiza para o méthodo atual
 
     def clear_layout(self, layout):
         while layout.count():
