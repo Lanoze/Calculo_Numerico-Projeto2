@@ -32,6 +32,8 @@ class MatrixApp(QWidget):
         self.integ_usarFuncao = False
         self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
 
+        self.interp_set_atual = 0
+
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
         self.matrix_data = []
         # Manter uma referência aos widgets para fácil acesso
@@ -442,6 +444,7 @@ class MatrixApp(QWidget):
             self.y_data_input.clear()
             if metodo_selecionado in ("Lagrange", "Newton"):
                 self.x_interpolar_input.clear()
+                self.interp_set_atual = 0 #Volta a setar a partir do menor grau
 
 
     def settar(self):
@@ -482,6 +485,20 @@ class MatrixApp(QWidget):
             # self.listInput.setText("-348, -600, 87, 424, -107, 176, 304, 0.0001, -352, 424")
             self.listInput.clear()
             self.iterInput.setText('110')
+        elif metodo_selecionado in ("Lagrange", "Newton"):
+            match self.interp_set_atual:
+                case 0: #Grau 2, 3 pontos
+                    self.x_data_input.setText("0.75, 1.25, 1.5")
+                    self.y_data_input.setText("-0.60, 0.70, 1.88")
+                case 1: #Grau 3, 4 pontos
+                    self.x_data_input.setText("0.75, 1.25, 1.5, 2.0")
+                    self.y_data_input.setText("-0.60, 0.70, 1.88, 6.0")
+                case 2: #Grau 4, 5 pontos (todos)
+                    self.x_data_input.setText("0.25, 0.75, 1.25, 1.5, 2.0")
+                    self.y_data_input.setText("-0.45, -0.60, 0.70, 1.88, 6.0")
+            self.x_interpolar_input.setText('1.15')
+            self.CBUsarFuncao.setChecked(False)
+            self.interp_set_atual = (self.interp_set_atual+1)%3
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
