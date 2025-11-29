@@ -509,10 +509,10 @@ class MatrixApp(QWidget):
         resultado = None
         erro_qualquer = False # Usado para exibir a tela de erro em vez de resultado
         # Métodos ainda não implementados
-        if metodo_selecionado in ("Jacobi","LU"):
-            resultado = "Método ainda não implementado"
-            erro_qualquer = True
-        if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
+        if metodo_selecionado in ("LU","Jacobi"):
+            QMessageBox.critical(self, "Erro", "Método ainda não implementado")
+            return
+        elif metodo_selecionado in ("Gauss", "Gauss-Seidel", "Jordan"):
             sistema = []
             for row in range(len(self.matrix_widgets)):
                 linha = []
