@@ -360,7 +360,7 @@ class MatrixApp(QWidget):
             row_widgets = []
             for col in range(self.num_cols):
                 line_edit = QLineEdit(self)
-                line_edit.setFixedSize(50, 30)
+                line_edit.setFixedSize(60, 30)
                 line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 line_edit.setText(self.matrix_data[row-1][col])
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
@@ -411,8 +411,8 @@ class MatrixApp(QWidget):
     def processar_dados_interpolacao(self):
         try:
             x = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.x_data_input.text().split(',')]
-            print("Depois de formatado:")
-            print(x)
+            # print("Depois de formatado:")
+            # print(x)
             if self.CBUsarFuncao.isChecked():
                 funcao = formatar_expression(self.y_data_input.text())
                 y = [avaliar_expressao(funcao,p) for p in x]
@@ -458,11 +458,34 @@ class MatrixApp(QWidget):
             for i in range(len(self.matrix_widgets)):
                 for j in range(len(self.matrix_widgets[0])):
                     self.matrix_widgets[i][j].setText(dados_matriz[i][j])
-
+        elif metodo_selecionado in ("Jacobi","Gauss-Seidel"):
+            if self.num_rows-1 != 10:
+                resize_antigo = self.resize_input.text()
+                self.resize_input.setText('10')
+                self.resize_matrix()
+                self.resize_input.setText(resize_antigo)
+            dados_matriz = [['1','-sqrt(2)/2','0','0','sqrt(2)/2','0','0','0','0','0','0'],
+                            ['0','-sqrt(2)/2','0','0','-sqrt(2)/2','0','0','0','0','0','500'],
+                            ['0','0','-sqrt(3)/2','0','0','0','0','0','-0.5','0','100'],
+                            ['0','sqrt(2)/2','0','1','0','0','0','0','0','0','0'],
+                            ['0','0','sqrt(3)/2','0','sqrt(2)/2','0','0','0','0','0','0'],
+                            ['0','0','0','0','0','1','0','0','0.5','0','0'],
+                            ['0','0','0','0','0','0','-1','0','-sqrt(3)/2','0','0'],
+                            ['0','sqrt(2)/2','0','0','0','0','0','1','0','1','0'],
+                            ['-1','0','-0.5','0','0','0','0','0','sqrt(3)/2','0','0'],
+                            ['0','0','0.5','0','-sqrt(2)/2','0','1','0','0','-1','0']
+                            ]
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText(dados_matriz[i][j])
+            self.tolInput.setText('0.0001')
+            # self.listInput.setText("-348, -600, 87, 424, -107, 176, 304, 0.0001, -352, 424")
+            self.listInput.clear()
+            self.iterInput.setText('110')
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
-        numero_de_valores_iniciais_errado = False # Usado somente em Gauss-Seidel
+        erro_qualquer = False # Usado somente em Gauss-Seidel
         if metodo_selecionado in ("Jacobi","LU"):
             resultado = "Método ainda não implementado"
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
@@ -499,8 +522,8 @@ class MatrixApp(QWidget):
                             resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
                         else:
                             resultado = "Você não colocou o número correto de valores iniciais."
-                            # passo_a_passo = []
-                            numero_de_valores_iniciais_errado = True
+                            #passo_a_passo = []
+                            erro_qualquer = True
                     else:
                         valores_iniciais = []
                         resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
@@ -508,6 +531,7 @@ class MatrixApp(QWidget):
                     resultado, passo_a_passo = eliminacao_jordan(sistema)
             except Exception as e:
                 mensagem = f"Erro: {e}"
+                erro_qualquer = True
                 # --- INÍCIO DA CORREÇÃO ---
 
                 # PRIMEIRO, CHECAR SE O RESULTADO É UMA STRING (QUE SÓ PODE SER ERRO)
@@ -528,12 +552,12 @@ class MatrixApp(QWidget):
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
                 # Exibe o que quer que tenha acontecido
-            if metodo_selecionado in ("Jacobi","LU") or numero_de_valores_iniciais_errado:
+            if metodo_selecionado in ("Jacobi","LU") or erro_qualquer:
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
                 if metodo_selecionado == "Gauss-Seidel":
-                    print("Passo a passo:")
-                    print(passo_a_passo)
+                    # print("Passo a passo:")
+                    # print(passo_a_passo)
                     ResultadoSistemaIterativo(self,self.num_rows-1,mensagem,passo_a_passo,matrix_organizada,diferencas,f"Resultado - {metodo_selecionado}").exec()
                 else:
                     ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
@@ -602,8 +626,8 @@ class MatrixApp(QWidget):
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
                     return
-            print(f"X = {x_pontos}")
-            print(f"Y = {y_pontos}")
+            # print(f"X = {x_pontos}")
+            # print(f"Y = {y_pontos}")
             # Necessário a cópia pois os metodos removem o ponto inicial e final de Y_pontos
             if metodo_selecionado == "Trapézio":
                 resultado = integracao_trapezio(y_pontos.copy(),h)
