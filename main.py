@@ -197,22 +197,22 @@ class MatrixApp(QWidget):
                                     }
 
                                     QComboBox {
-                                    border: 1px solid #555; 
-                                    border-radius: 5px; 
-                                    padding: 5px 10px; 
-                                    background-color: #5B92A8; 
-                                    color: black; 
+                                    border: 1px solid #555;
+                                    border-radius: 5px;
+                                    padding: 5px 10px;
+                                    background-color: #5B92A8;
+                                    color: black;
                                     font-size: 14px;
                                     min-width: 95px;
                                     }
                                     QComboBox:focus {
                                     outline: none;
                                     }
-                                    
+
                                     QCheckBox {
                                         spacing: 10px; /* Espaço entre o interruptor e o texto */
                                     }
-                            
+
                                     /* O 'trilho' por onde o botão desliza */
                                     QCheckBox::indicator {
                                         width: 40px;
@@ -221,7 +221,7 @@ class MatrixApp(QWidget):
                                         border: 1px solid #777;
                                         border-radius: 10px; /* Deixa o trilho arredondado */
                                     }
-                            
+
                                     /* O círculo deslizante (handle) */
                                     QCheckBox::indicator::handle {
                                         background-color: white;
@@ -230,25 +230,25 @@ class MatrixApp(QWidget):
                                         height: 16px;
                                         margin: 2px; /* Pequena margem interna */
                                     }
-                            
+
                                     /* --- ESTADO LIGADO --- */
-                                    
+
                                     /* O trilho quando está LIGADO (checked) */
                                     QCheckBox::indicator:checked {
                                         background-color: #131352; /* Cor verde (ligado) */
                                         border: 1px solid #3E8E41;
                                     }
-                            
+
                                     /* O círculo deslizante quando está LIGADO */
                                     QCheckBox::indicator:checked::handle {
                                         /* Move o círculo para a direita */
-                                        margin-left: 22px; 
+                                        margin-left: 22px;
                                     }
 
                                     MatrixApp{
                                     background-color: #A6C0ED
                                     }
-                                    QMessageBox{
+                                    QDialog{
                                     background-color: #A6C0ED
                                     }
                                 ''')

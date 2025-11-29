@@ -65,21 +65,6 @@ class ResultadoIntegral(QDialog):
         self.toolbar.setVisible(False)
         self.canvas.setVisible(False)
 
-        self.setStyleSheet('''
-                                            QPushButton{
-                                            font-size: 15px;
-                                            background-color: #5B92A8
-                                            }
-                                            QPushButton:hover{
-                                            background-color: #4D7C94
-                                            }
-                                            QPushButton:focus {
-                                            outline: none;
-                                            }
-                                            ResultadoIntegral{
-                                            background-color: #A6C0ED
-                                            }
-                                        ''')
     def controla_grafico(self):
         if self.grafico_btn.text() == "Mostrar":
             self.toolbar.setVisible(True)
@@ -174,23 +159,6 @@ class ResultadoSistema(QDialog):
         self.previous_btn.clicked.connect(self.mudar_pagina)
         self.next_btn.clicked.connect(self.mudar_pagina)
         self.alternar_btn.clicked.connect(self.alternar)
-
-
-        self.setStyleSheet('''
-                                QPushButton{
-                                font-size: 15px;
-                                background-color: #5B92A8
-                                }
-                                QPushButton:hover{
-                                background-color: #4D7C94
-                                }
-                                QPushButton:focus {
-                                outline: none;
-                                }
-                                ResultadoSistema{
-                                background-color: #A6C0ED
-                                }
-                                ''')
 
     def mudar_pagina(self):
         if self.sender() == self.next_btn:
@@ -327,22 +295,6 @@ class ResultadoSistemaIterativo(QDialog):
         self.previous_btn.clicked.connect(self.mudar_pagina)
         self.next_btn.clicked.connect(self.mudar_pagina)
         self.alternar_btn.clicked.connect(self.alternar)
-
-        self.setStyleSheet('''
-                                        QPushButton{
-                                        font-size: 15px;
-                                        background-color: #5B92A8
-                                        }
-                                        QPushButton:hover{
-                                        background-color: #4D7C94
-                                        }
-                                        QPushButton:focus {
-                                        outline: none;
-                                        }
-                                        ResultadoSistemaIterativo{
-                                        background-color: #A6C0ED
-                                        }
-                                        ''')
 
     def mudar_pagina(self):
         if self.sender() == self.next_btn:
