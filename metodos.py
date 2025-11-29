@@ -6,8 +6,8 @@ from copy import deepcopy
 def eliminacao_gauss(sistema: list[list[float]]):
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(deepcopy(sistema))
-    print("Sistema inicial:")
-    print(sistema)
+    # print("Sistema inicial:")
+    # print(sistema)
     for index in range(len(sistema)-1):
         pivo = sistema[index][index]
         linha_maior_pivo = index
@@ -21,8 +21,8 @@ def eliminacao_gauss(sistema: list[list[float]]):
             m = -sistema[index2][index]/pivo
             somar_linhas(sistema, index2, index, m)
         sistema_passo_a_passo.append(deepcopy(sistema))
-        print(f"Sistema no índice {index}:")
-        print(sistema)
+        # print(f"Sistema no índice {index}:")
+        # print(sistema)
     #O sistema já está completo, agora é só pegar os resultados
     resultado = []
     for i, elemento in enumerate(reversed(sistema)):
@@ -37,8 +37,8 @@ def eliminacao_gauss(sistema: list[list[float]]):
 def eliminacao_jordan(sistema: list[list[float]]):
     sistema_passo_a_passo = []
     sistema_passo_a_passo.append(deepcopy(sistema))
-    print("Sistema inicial:")
-    print(sistema)
+    # print("Sistema inicial:")
+    # print(sistema)
     #Diferente do de Gauss, é necessário ir até a última linha, para eliminar os elementos acima do pivô
     for index in range(len(sistema)):
         pivo = sistema[index][index]
@@ -60,8 +60,8 @@ def eliminacao_jordan(sistema: list[list[float]]):
             m = -sistema[index2][index] / pivo
             somar_linhas(sistema, index2, index, m)
         sistema_passo_a_passo.append(deepcopy(sistema))
-        print(f"Sistema no índice {index}:")
-        print(sistema)
+        # print(f"Sistema no índice {index}:")
+        # print(sistema)
     # O sistema já está completo, agora é só pegar os resultados
     resultado = []
     for index in range(len(sistema)):
@@ -69,8 +69,8 @@ def eliminacao_jordan(sistema: list[list[float]]):
         multiplicar_linha_por_escalar(sistema, index, 1/divisor)
         resultado.append(sistema[index][-1])
     sistema_passo_a_passo.append(deepcopy(sistema))
-    print("Sistema como matriz identidade:")
-    print(sistema)
+    # print("Sistema como matriz identidade:")
+    # print(sistema)
     return resultado,sistema_passo_a_passo
 
 def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
@@ -105,9 +105,9 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
                else:
                    #print("\nImpossível de garantir o critério das linhas")
                    break
-    print("\nConvergência garantida") if convergencia_garantida else print("\nImpossível de garantir o critério das linhas")
-    print("Sistema após rearranjo:")
-    print(sistema)
+    # print("\nConvergência garantida") if convergencia_garantida else print("\nImpossível de garantir o critério das linhas")
+    # print("Sistema após rearranjo:")
+    # print(sistema)
     sistema_rearranjado = sistema
 
     diferencas = []
@@ -121,8 +121,8 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
                 if j != i:
                     soma_numerador -= (equacao[j] * solucao[j])
             solucao[i] = soma_numerador / equacao[i]
-        print(f"Solução na iteração {iteration}:")
-        print(solucao)
+        # print(f"Solução na iteração {iteration}:")
+        # print(solucao)
         solucao_passo_a_passo.append(solucao.copy())
         #Cálculo para achar a diferença relativa
         maior_diferenca = abs(solucao_passo_a_passo[iteration][0] - solucao_passo_a_passo[iteration-1][0])
@@ -132,7 +132,7 @@ def gauss_seidel(sistema, max_iter=100, tol=1e-6,valores_iniciais=[]):
                 maior_diferenca = abs(solucao_passo_a_passo[iteration][j] - solucao_passo_a_passo[iteration-1][j])
             if abs(solucao_passo_a_passo[iteration][j]) > maior_variavel:
                 maior_variavel = abs(solucao_passo_a_passo[iteration][j])
-        print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
+        # print(f"Diferença relativa foi {maior_diferenca/maior_variavel}")
         diferencas.append(maior_diferenca/maior_variavel)
         iteration += 1
         #Critério de saída

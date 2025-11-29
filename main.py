@@ -21,7 +21,18 @@ class MatrixApp(QWidget):
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
         self.num_cols = 3 #Geralmente num_cols seria igual a num_linhas+1
+        self.metodo_atual = "Gauss"
+        #Salva os inputs de interpolação
+        self.interp_x_texto = ''
+        self.interp_y_texto = ''
+        self.interp_usarFuncao = False
+        #Salva os inputs de integração
+        self.integ_x_texto = ''
+        self.integ_y_texto = ''
+        self.integ_usarFuncao = False
         self.MAX_VARIABLES = 10 #O número máximo de colunas é esse número + 1 (é uma constante)
+
+        self.interp_set_atual = 0
 
         # 1. Nosso modelo de dados para armazenar os valores (começa vazio), não armazena as variáveis
         self.matrix_data = []
@@ -31,9 +42,19 @@ class MatrixApp(QWidget):
         #self.setup_ui()
         self.main_layout = QVBoxLayout(self)  # Empilha verticalmente os elementos
         # self.main_layout.addStretch(1)
+        layout_superior = QHBoxLayout()
+        self.clear_btn = QPushButton("Clear")
+        self.clear_btn.setFixedSize(50, 20)
+        self.clear_btn.clicked.connect(self.clear)
+        layout_superior.addWidget(self.clear_btn)
         self.label_titulo = QLabel("Solucionador de sistema linear")
         self.label_titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.main_layout.addWidget(self.label_titulo)
+        layout_superior.addWidget(self.label_titulo)
+        self.set_btn = QPushButton("Settar")
+        self.set_btn.setFixedSize(50, 20)
+        self.set_btn.clicked.connect(self.settar)
+        layout_superior.addWidget(self.set_btn)
+        self.main_layout.addLayout(layout_superior)
 
         # --- NOVO: QStackedWidget para alternar a interface de entrada ---
         self.stacked_input_widget = DynamicStackedWidget()
@@ -117,6 +138,7 @@ class MatrixApp(QWidget):
         self.yLabel = QLabel("Pontos Y (separados por vírgula):")
         interp_layout.addRow(self.yLabel, self.y_data_input)
 
+        #O ponto x o qual queremos achar o valor do polinômio
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
@@ -241,9 +263,18 @@ class MatrixApp(QWidget):
     # ---------- ALTERAÇÃO ----------
     def toggle_input_area(self, text):
         """Alterna entre a interface da Matriz e a interface de Interpolação ou Integração."""
+        #Garante que os inputs dos métodos de interpolação e integração sejam diferentes
+        if self.metodo_atual in ("Lagrange", "Newton"):
+            self.interp_x_texto = self.x_data_input.text()
+            self.interp_y_texto = self.y_data_input.text()
+            self.interp_usarFuncao = self.CBUsarFuncao.isChecked()
+        elif self.metodo_atual in ("Trapézio", "Simpson"):
+            self.integ_x_texto = self.x_data_input.text()
+            self.integ_y_texto = self.y_data_input.text()
+            self.integ_usarFuncao = self.CBUsarFuncao.isChecked()
 
-        # --- Interpolação (mantém sua lógica atual) ---
-        if text in ["Lagrange", "Newton"]:
+        # Interpolação
+        if text in ("Lagrange", "Newton"):
             self.label_titulo.setText("Interpolação")
             self.stacked_input_widget.setCurrentWidget(self.interpolation_page)
             self.xLabel.setText("Pontos X (separados por vírgula):")
@@ -251,11 +282,16 @@ class MatrixApp(QWidget):
             # Mantém placeholders originais para interpolação
             # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            if self.metodo_atual not in ("Lagrange", "Newton"): #Não atualiza se já estava num méthodo de interpolação
+                self.x_data_input.setText(self.interp_x_texto)
+                self.y_data_input.setText(self.interp_y_texto)
+                self.CBUsarFuncao.setChecked(self.interp_usarFuncao)
+
             self.x_interpolar_input.show()  # mostrar novamente se estava oculto
             self.label_x_interpolar.show()
 
-        # --- Integração Numérica (nova parte corrigida) ---
-        elif text in ["Trapézio", "Simpson"]:
+        # Integração
+        elif text in ("Trapézio", "Simpson"):
             self.label_titulo.setText("Integração Numérica")
             self.interpolation_group.setTitle("Dados para Integração (X, Y)")
             #self.CBUsarFuncao.setVisible(True)
@@ -265,10 +301,15 @@ class MatrixApp(QWidget):
             self.xLabel.setText("Limites e número de pontos: ")
             # self.x_data_input.setPlaceholderText("Ex: 1.0, 2.5, 4.0")
             # self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+            if self.metodo_atual not in ("Trapézio", "Simpson"):#Não atualiza se já estava num méthodo de integração
+                self.x_data_input.setText(self.integ_x_texto)
+                self.y_data_input.setText(self.integ_y_texto)
+                self.CBUsarFuncao.setChecked(self.integ_usarFuncao)
+
             self.x_interpolar_input.hide()# não precisa de x para interpolar aqui
             self.label_x_interpolar.hide()
 
-        # --- Sistemas Lineares (mantém sua lógica original) ---
+        #Sistemas Lineares
         else:
             self.label_titulo.setText("Solucionador de sistema linear")
             self.stacked_input_widget.setCurrentWidget(self.matrix_page)
@@ -279,6 +320,7 @@ class MatrixApp(QWidget):
         if not self.isMaximized():
             self.stacked_input_widget.updateGeometry()
             QTimer.singleShot(0,self.adjustSize)
+        self.metodo_atual = text #Atualiza para o méthodo atual
 
     def clear_layout(self, layout):
         while layout.count():
@@ -320,7 +362,7 @@ class MatrixApp(QWidget):
             row_widgets = []
             for col in range(self.num_cols):
                 line_edit = QLineEdit(self)
-                line_edit.setFixedSize(50, 30)
+                line_edit.setFixedSize(60, 30)
                 line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 line_edit.setText(self.matrix_data[row-1][col])
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
@@ -371,8 +413,8 @@ class MatrixApp(QWidget):
     def processar_dados_interpolacao(self):
         try:
             x = [float(numEvaluate(formatar_expression(v),local_dict={},global_dict={})) for v in self.x_data_input.text().split(',')]
-            print("Depois de formatado:")
-            print(x)
+            # print("Depois de formatado:")
+            # print(x)
             if self.CBUsarFuncao.isChecked():
                 funcao = formatar_expression(self.y_data_input.text())
                 y = [avaliar_expressao(funcao,p) for p in x]
@@ -387,10 +429,84 @@ class MatrixApp(QWidget):
             QMessageBox.critical(self,"Erro",f"Dados inválidos, erro: {e}")
             return None,None,None
 
+    def clear(self):
+        metodo_selecionado = self.menu_opcoes.currentText()
+        if metodo_selecionado in ("Gauss","Jordan","Jacobi","Gauss-Seidel","LU"):
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText('0')
+            if metodo_selecionado in ("Jacobi","Gauss-Seidel"):
+                self.tolInput.clear()
+                self.listInput.clear()
+                self.iterInput.clear()
+        elif metodo_selecionado in ("Lagrange", "Newton","Trapézio", "Simpson"):
+            self.x_data_input.clear()
+            self.y_data_input.clear()
+            if metodo_selecionado in ("Lagrange", "Newton"):
+                self.x_interpolar_input.clear()
+                self.interp_set_atual = 0 #Volta a setar a partir do menor grau
+
+
+    def settar(self):
+        metodo_selecionado = self.menu_opcoes.currentText()
+        if metodo_selecionado in ("Gauss","Jordan","LU"):
+            if self.num_rows-1 != 3:
+                resize_antigo = self.resize_input.text()
+                self.resize_input.setText('3')
+                self.resize_matrix()
+                self.resize_input.setText(resize_antigo)
+            dados_matriz = [['0.55','0.25','0.25','4800'],
+                            ['0.30','0.45','0.20','5800'],
+                            ['0.15','0.30','0.55','5700']]
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText(dados_matriz[i][j])
+        elif metodo_selecionado in ("Jacobi","Gauss-Seidel"):
+            if self.num_rows-1 != 10:
+                resize_antigo = self.resize_input.text()
+                self.resize_input.setText('10')
+                self.resize_matrix()
+                self.resize_input.setText(resize_antigo)
+            dados_matriz = [['1','-sqrt(2)/2','0','0','sqrt(2)/2','0','0','0','0','0','0'],
+                            ['0','-sqrt(2)/2','0','0','-sqrt(2)/2','0','0','0','0','0','500'],
+                            ['0','0','-sqrt(3)/2','0','0','0','0','0','-0.5','0','100'],
+                            ['0','sqrt(2)/2','0','1','0','0','0','0','0','0','0'],
+                            ['0','0','sqrt(3)/2','0','sqrt(2)/2','0','0','0','0','0','0'],
+                            ['0','0','0','0','0','1','0','0','0.5','0','0'],
+                            ['0','0','0','0','0','0','-1','0','-sqrt(3)/2','0','0'],
+                            ['0','sqrt(2)/2','0','0','0','0','0','1','0','1','0'],
+                            ['-1','0','-0.5','0','0','0','0','0','sqrt(3)/2','0','0'],
+                            ['0','0','0.5','0','-sqrt(2)/2','0','1','0','0','-1','0']
+                            ]
+            for i in range(len(self.matrix_widgets)):
+                for j in range(len(self.matrix_widgets[0])):
+                    self.matrix_widgets[i][j].setText(dados_matriz[i][j])
+            self.tolInput.setText('0.0001')
+            # self.listInput.setText("-348, -600, 87, 424, -107, 176, 304, 0.0001, -352, 424")
+            self.listInput.clear()
+            self.iterInput.setText('110')
+        elif metodo_selecionado in ("Lagrange", "Newton"):
+            match self.interp_set_atual:
+                case 0: #Grau 2, 3 pontos
+                    self.x_data_input.setText("0.75, 1.25, 1.5")
+                    self.y_data_input.setText("-0.60, 0.70, 1.88")
+                case 1: #Grau 3, 4 pontos
+                    self.x_data_input.setText("0.75, 1.25, 1.5, 2.0")
+                    self.y_data_input.setText("-0.60, 0.70, 1.88, 6.0")
+                case 2: #Grau 4, 5 pontos (todos)
+                    self.x_data_input.setText("0.25, 0.75, 1.25, 1.5, 2.0")
+                    self.y_data_input.setText("-0.45, -0.60, 0.70, 1.88, 6.0")
+            self.x_interpolar_input.setText('1.15')
+            self.CBUsarFuncao.setChecked(False)
+            self.interp_set_atual = (self.interp_set_atual+1)%3
+        else: #Integração
+            self.x_data_input.setText("0.0, 2.8, 8")
+            self.y_data_input.setText("3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.00")
+            self.CBUsarFuncao.setChecked(False)
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
-        numero_de_valores_iniciais_errado = False # Usado somente em Gauss-Seidel
+        erro_qualquer = False # Usado somente em Gauss-Seidel
         if metodo_selecionado in ("Jacobi","LU"):
             resultado = "Método ainda não implementado"
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
@@ -427,8 +543,8 @@ class MatrixApp(QWidget):
                             resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
                         else:
                             resultado = "Você não colocou o número correto de valores iniciais."
-                            # passo_a_passo = []
-                            numero_de_valores_iniciais_errado = True
+                            #passo_a_passo = []
+                            erro_qualquer = True
                     else:
                         valores_iniciais = []
                         resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
@@ -436,6 +552,7 @@ class MatrixApp(QWidget):
                     resultado, passo_a_passo = eliminacao_jordan(sistema)
             except Exception as e:
                 mensagem = f"Erro: {e}"
+                erro_qualquer = True
                 # --- INÍCIO DA CORREÇÃO ---
 
                 # PRIMEIRO, CHECAR SE O RESULTADO É UMA STRING (QUE SÓ PODE SER ERRO)
@@ -456,12 +573,12 @@ class MatrixApp(QWidget):
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
                 # Exibe o que quer que tenha acontecido
-            if metodo_selecionado in ("Jacobi","LU") or numero_de_valores_iniciais_errado:
+            if metodo_selecionado in ("Jacobi","LU") or erro_qualquer:
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
                 if metodo_selecionado == "Gauss-Seidel":
-                    print("Passo a passo:")
-                    print(passo_a_passo)
+                    # print("Passo a passo:")
+                    # print(passo_a_passo)
                     ResultadoSistemaIterativo(self,self.num_rows-1,mensagem,passo_a_passo,matrix_organizada,diferencas,f"Resultado - {metodo_selecionado}").exec()
                 else:
                     ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
@@ -530,8 +647,8 @@ class MatrixApp(QWidget):
                 except Exception as e:
                     QMessageBox.critical(self,"Erro",f"Ocorreu algum erro: {e}")
                     return
-            print(f"X = {x_pontos}")
-            print(f"Y = {y_pontos}")
+            # print(f"X = {x_pontos}")
+            # print(f"Y = {y_pontos}")
             # Necessário a cópia pois os metodos removem o ponto inicial e final de Y_pontos
             if metodo_selecionado == "Trapézio":
                 resultado = integracao_trapezio(y_pontos.copy(),h)
