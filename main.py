@@ -503,12 +503,15 @@ class MatrixApp(QWidget):
             self.x_data_input.setText("0.0, 2.8, 8")
             self.y_data_input.setText("3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.00")
             self.CBUsarFuncao.setChecked(False)
+
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
-        erro_qualquer = False # Usado somente em Gauss-Seidel
+        erro_qualquer = False # Usado para exibir a tela de erro em vez de resultado
+        # Métodos ainda não implementados
         if metodo_selecionado in ("Jacobi","LU"):
             resultado = "Método ainda não implementado"
+            erro_qualquer = True
         if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
             sistema = []
             for row in range(len(self.matrix_widgets)):
@@ -572,8 +575,8 @@ class MatrixApp(QWidget):
             # else:
             #     mensagem = f"Resultado em formato inesperado: {str(resultado)}"
 
-                # Exibe o que quer que tenha acontecido
-            if metodo_selecionado in ("Jacobi","LU") or erro_qualquer:
+            # Se aconteceu qualquer tipo de erro, exibe uma Message box relatando o erro
+            if erro_qualquer:
                 QMessageBox.information(self,f"Resultado - {metodo_selecionado}",mensagem)
             else:
                 if metodo_selecionado == "Gauss-Seidel":
