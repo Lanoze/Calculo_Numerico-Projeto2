@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QGroupBox, QFormLayout,
     QCheckBox
 )
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QTimer,QEvent
 from numexpr import evaluate as numEvaluate
 
 
@@ -409,6 +409,10 @@ class MatrixApp(QWidget):
         else:
             self.yLabel.setText("Pontos Y (separados por vírgula):")
             self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+
+    def changeEvent(self, event, /):
+        if event.type() == QEvent.WindowStateChange and not(self.windowState() & Qt.WindowMaximized):
+            QTimer.singleShot(0, self.adjustSize)
 
     def processar_dados_interpolacao(self):
         try:
