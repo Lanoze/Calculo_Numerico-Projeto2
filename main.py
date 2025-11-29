@@ -509,10 +509,10 @@ class MatrixApp(QWidget):
         resultado = None
         erro_qualquer = False # Usado para exibir a tela de erro em vez de resultado
         # Métodos ainda não implementados
-        if metodo_selecionado in ("Jacobi","LU"):
-            resultado = "Método ainda não implementado"
-            erro_qualquer = True
-        if metodo_selecionado in ["Gauss", "Gauss-Seidel", "Jordan", "LU", "Jacobi"]:
+        if metodo_selecionado in ("LU","Jacobi"):
+            QMessageBox.critical(self, "Erro", "Método ainda não implementado")
+            return
+        elif metodo_selecionado in ("Gauss", "Gauss-Seidel", "Jordan"):
             sistema = []
             for row in range(len(self.matrix_widgets)):
                 linha = []
@@ -537,8 +537,12 @@ class MatrixApp(QWidget):
                     else:
                         tol = 1e-6
                     max_iter = self.iterInput.text()
-                    if max_iter:
+                    if max_iter: #Se o usuário tiver digitado algo para o máximo de iterações
                         max_iter = int(self.iterInput.text())
+                        if max_iter <= 0:
+                            raise ValueError("Máximo de iterações menor ou igual a 0")
+                        elif max_iter > 2000:
+                            raise ValueError("Máximo de iterações muito grande (> 2000)")
                     else:
                         max_iter = 100
                     valores_iniciais = self.listInput.text()
@@ -547,9 +551,7 @@ class MatrixApp(QWidget):
                         if len(valores_iniciais) == self.num_rows - 1:
                             resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema,max_iter=max_iter,tol=tol,valores_iniciais=valores_iniciais)
                         else:
-                            resultado = "Você não colocou o número correto de valores iniciais."
-                            #passo_a_passo = []
-                            erro_qualquer = True
+                            raise ValueError("Você não colocou o número correto de valores iniciais.")
                     else:
                         valores_iniciais = []
                         resultado, passo_a_passo, matrix_organizada, diferencas = gauss_seidel(sistema, max_iter=max_iter, tol=tol, valores_iniciais=valores_iniciais)
@@ -589,7 +591,7 @@ class MatrixApp(QWidget):
                     ResultadoSistema(self,self.num_rows-1,mensagem,passo_a_passo,f"Resultado - {metodo_selecionado}").exec()
                 # --- FIM DA CORREÇÃO ---
 
-        elif metodo_selecionado in ["Lagrange","Newton"]:
+        elif metodo_selecionado in ("Lagrange","Newton"):
             x,y,x_interp = self.processar_dados_interpolacao()
             if x is None: return
             resultado = interpolacao_lagrange(x,y,x_interp) if metodo_selecionado=="Lagrange" else interpolacao_newton(x,y,x_interp)
@@ -597,7 +599,7 @@ class MatrixApp(QWidget):
                               titulo='Resultado da Interpolação',x_pontos_special=[x_interp],y_pontos_special=[resultado]).exec()
             return
 
-        elif metodo_selecionado in ["Trapézio","Simpson"]:
+        elif metodo_selecionado in ("Trapézio","Simpson"):
             x_dados = self.x_data_input.text().split(',')
             if len(x_dados) != 3:
                 QMessageBox.critical(self,"Erro","Você precisa digitar exatamente 3 números")
