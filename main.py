@@ -499,6 +499,10 @@ class MatrixApp(QWidget):
             self.x_interpolar_input.setText('1.15')
             self.CBUsarFuncao.setChecked(False)
             self.interp_set_atual = (self.interp_set_atual+1)%3
+        else: #Integração
+            self.x_data_input.setText("0.0, 2.8, 8")
+            self.y_data_input.setText("3.00, 2.92, 2.75, 2.52, 2.30, 1.84, 0.92, 0.00")
+            self.CBUsarFuncao.setChecked(False)
     def calcular(self):
         metodo_selecionado = self.menu_opcoes.currentText()
         resultado = None
