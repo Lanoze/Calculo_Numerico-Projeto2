@@ -532,6 +532,8 @@ class MatrixApp(QWidget):
                     tol = self.tolInput.text()
                     if tol: #Se não for string vazia
                         tol = float(tol)
+                        if tol <= 0:
+                            raise ValueError("Tolerância menor ou igual a 0")
                     else:
                         tol = 1e-6
                     max_iter = self.iterInput.text()
