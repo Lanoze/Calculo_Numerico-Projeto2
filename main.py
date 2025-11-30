@@ -411,7 +411,7 @@ class MatrixApp(QWidget):
             self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
 
     def changeEvent(self, event, /):
-        if event.type() == QEvent.WindowStateChange and not(self.windowState() & Qt.WindowMaximized):
+        if event.type() == QEvent.WindowStateChange and not self.isMaximized():
             QTimer.singleShot(0, self.adjustSize)
 
     def processar_dados_interpolacao(self):
