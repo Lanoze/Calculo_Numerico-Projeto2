@@ -141,7 +141,10 @@ class ResultadoSistema(QDialog):
             for j in range(number_variables+1):
                 new_label = QLabel(f"{matriz_atual[i][j]:.3g}")
                 new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
+                if i == j: #Coloca negrito para a diagonal principal
+                    new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;font-weight: bold;")
+                else:
+                    new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
                 linha.append(new_label)
                 self.matrix.addWidget(new_label, i+1, j)
             self.label_matrix.append(linha)
@@ -245,7 +248,10 @@ class ResultadoSistemaIterativo(QDialog):
             for j in range(number_variables+1):
                 new_label = QLabel(f"{matriz_organizada[i][j]:.3g}")
                 new_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
+                if i==j: #Coloca negrito para a diagonal principal
+                    new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;font-weight: bold;")
+                else:
+                    new_label.setStyleSheet("font-size: 16px; background-color: white; color: black;")
                 linha.append(new_label)
                 self.layoutMatrizSistema.addWidget(new_label, i+1, j)
             self.label_matrix.append(linha)
