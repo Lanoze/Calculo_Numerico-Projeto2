@@ -25,6 +25,7 @@ O código foi estruturado para permitir **reutilização**: com a mesma base,
 - Organização modular do código, facilitando a inclusão de novos problemas.
 - Possibilidade de reutilizar as rotinas numéricas com diferentes conjuntos de dados.
 - Botão settar para automaticamente colocar os dados do problema resolvido pela equipe
+- Vídeo mostrando como usar o aplicativo e a resolução dos problemas passados: https://youtu.be/Epjna7YUbE4
 
 ---
 
