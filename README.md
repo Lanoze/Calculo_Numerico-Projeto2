@@ -24,6 +24,7 @@ O código foi estruturado para permitir **reutilização**: com a mesma base,
 - Integração numérica usando Regra do Trapézio e Regra de Simpson, na forma repetida.
 - Organização modular do código, facilitando a inclusão de novos problemas.
 - Possibilidade de reutilizar as rotinas numéricas com diferentes conjuntos de dados.
+- Botão settar para automaticamente colocar os dados do problema resolvido pela equipe
 
 ---
 
