@@ -4,12 +4,14 @@ from metodos import*
 from MyWidgets import*
 
 import sys
+import ctypes
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QGridLayout,QMessageBox,QComboBox, QGroupBox, QFormLayout,
     QCheckBox
 )
 from PySide6.QtCore import Qt,QTimer,QEvent
+from PySide6.QtGui import QIcon
 from numexpr import evaluate as numEvaluate
 
 
@@ -252,7 +254,8 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-
+        self.setWindowIcon(QIcon("matrix-ico.png"))
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
 
