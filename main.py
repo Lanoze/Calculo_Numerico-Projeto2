@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QCheckBox
 )
 from PySide6.QtCore import Qt,QTimer,QEvent
+from PySide6.QtGui import QIcon
 from numexpr import evaluate as numEvaluate
 
 
@@ -252,7 +253,7 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-
+        self.setWindowIcon(QIcon("matrix-ico.png"))
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
 
