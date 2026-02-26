@@ -4,6 +4,7 @@ from metodos import*
 from MyWidgets import*
 
 import sys
+import os
 import ctypes
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
@@ -14,6 +15,16 @@ from PySide6.QtCore import Qt,QTimer,QEvent
 from PySide6.QtGui import QIcon
 from numexpr import evaluate as numEvaluate
 
+def resource_path(relative_path):
+    """ Obtém o caminho absoluto para o recurso, funciona para dev e para o .exe """
+    try:
+        # O PyInstaller cria uma pasta temporária e guarda o caminho no _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        # Se não estiver rodando como .exe, usa a pasta atual
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class MatrixApp(QWidget):
     def __init__(self):
@@ -254,7 +265,7 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-        self.setWindowIcon(QIcon("matrix-ico.ico"))
+        self.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
