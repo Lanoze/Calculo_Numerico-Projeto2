@@ -265,8 +265,8 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-        self.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
+        #self.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
+        #ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
 
@@ -687,7 +687,10 @@ class MatrixApp(QWidget):
 
 if __name__ == "__main__":
     np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
+    #Colocar isso antes de criar o app supostamente ajuda com o icone do exe
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
     window = MatrixApp()
     window.show()
     sys.exit(app.exec())
