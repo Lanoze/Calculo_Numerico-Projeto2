@@ -15,6 +15,13 @@ from PySide6.QtCore import Qt,QTimer,QEvent
 from PySide6.QtGui import QIcon
 from numexpr import evaluate as numEvaluate
 
+#Para colocar o ícone
+try:
+    my_app_id = 'lorenzo.calculadora.numerica'
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(my_app_id)
+except Exception as e:
+    print(f"Erro ao definir AppID: {e}")
+
 def resource_path(relative_path):
     """ Obtém o caminho absoluto para o recurso, funciona para dev e para o .exe """
     try:
@@ -265,7 +272,7 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-        #self.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
+        self.setWindowIcon(QIcon(resource_path("matrix.ico")))
         #ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
@@ -687,10 +694,8 @@ class MatrixApp(QWidget):
 
 if __name__ == "__main__":
     np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
-    #Colocar isso antes de criar o app supostamente ajuda com o icone do exe
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(resource_path("matrix-ico.ico")))
+    app.setWindowIcon(QIcon(resource_path("matrix.ico")))
     window = MatrixApp()
     window.show()
     sys.exit(app.exec())
