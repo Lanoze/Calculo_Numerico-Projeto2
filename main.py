@@ -4,6 +4,7 @@ from metodos import*
 from MyWidgets import*
 
 import sys
+import os
 import ctypes
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
@@ -14,11 +15,20 @@ from PySide6.QtCore import Qt,QTimer,QEvent
 from PySide6.QtGui import QIcon
 from numexpr import evaluate as numEvaluate
 
+def resource_path(relative_path):
+    """ Obtém o caminho absoluto para o recurso, funciona para dev e para o .exe """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 class MatrixApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Calculadora de métodos Numéricos")
+        self.setWindowIcon(QIcon(resource_path("matrix.ico")))
 
         # ### MUDANÇA FUNCIONAL: Inicializa como 3x3 + 1 para labels/coluna B
         self.num_rows = 3 #O número de linhas é igual ao de colunas porque tem os labels (Variáveis)
@@ -254,7 +264,7 @@ class MatrixApp(QWidget):
                                     background-color: #A6C0ED
                                     }
                                 ''')
-        self.setWindowIcon(QIcon("matrix-ico.ico"))
+        self.setWindowIcon(QIcon(resource_path("matrix.ico")))
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
@@ -675,8 +685,15 @@ class MatrixApp(QWidget):
 
 
 if __name__ == "__main__":
+    try:
+        my_app_id = 'lorenzo.CN.unknown.version.irra'
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(my_app_id)
+    except Exception as e:
+        print(f"Erro ao definir AppID: {e}")
+
     np.seterr(all='raise')# Evita ter que ficar usando math.isnan e math.isinf
     app = QApplication(sys.argv)
+    # app.setWindowIcon(QIcon(resource_path("matrix.ico")))
     window = MatrixApp()
     window.show()
     sys.exit(app.exec())
