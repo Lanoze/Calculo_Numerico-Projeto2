@@ -100,6 +100,8 @@ class MatrixApp(QWidget):
         self.resize_button.clicked.connect(self.resize_matrix)
         self.resize_input = QLineEdit()
         self.resize_input.setPlaceholderText("Número de variáveis")
+        # Ao apertar enter no QLineEdit
+        self.resize_input.returnPressed.connect(self.resize_matrix)
         resize_row.addWidget(self.resize_button)
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
