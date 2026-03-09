@@ -255,7 +255,7 @@ class MatrixApp(QWidget):
                                     }
                                 ''')
         self.setWindowIcon(QIcon("matrix-ico.ico"))
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2')
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('calculo_numerico-projeto2.')
         # Cria a matriz inicial (agora preenche self.matrix_data com "0")
         self.rebuild_matrix_ui()
 
