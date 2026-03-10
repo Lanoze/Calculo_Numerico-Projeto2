@@ -180,10 +180,11 @@ class MatrixApp(QWidget):
                                     QPushButton:hover{
                                     background-color: #4D7C94
                                     }
+                                    /*
                                     QPushButton:focus {
                                     outline: none;
                                     }
-
+                                    */
                                     QPushButton#Aumentar{
                                     font-size: 30px;
                                     background-color: #4CAF50; /* Verde */
@@ -209,10 +210,11 @@ class MatrixApp(QWidget):
                                     font-size: 14px;
                                     min-width: 95px;
                                     }
-                                    QComboBox:focus {
-                                    outline: none;
+                                    
+                                    QComboBox:focus{
+                                    border: 3px solid rgba(0,0,255,0.5);
                                     }
-
+                                    
                                     QCheckBox {
                                         spacing: 10px; /* Espaço entre o interruptor e o texto */
                                     }
