@@ -378,6 +378,7 @@ class MatrixApp(QWidget):
                 line_edit.setFixedSize(60, 30)
                 line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 line_edit.setText(self.matrix_data[row-1][col])
+                line_edit.returnPressed.connect(self.calcular)
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)
             self.matrix_widgets.append(row_widgets)
