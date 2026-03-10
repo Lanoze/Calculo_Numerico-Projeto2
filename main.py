@@ -96,11 +96,13 @@ class MatrixApp(QWidget):
         # Resize da Matriz
         resize_row = QHBoxLayout()
         resize_row.addStretch(1)
-        resize_button = QPushButton("Resize")
-        resize_button.clicked.connect(self.resize_matrix)
+        self.resize_button = QPushButton("Resize")
+        self.resize_button.clicked.connect(self.resize_matrix)
         self.resize_input = QLineEdit()
         self.resize_input.setPlaceholderText("Número de variáveis")
-        resize_row.addWidget(resize_button)
+        # Ao apertar enter no QLineEdit
+        self.resize_input.returnPressed.connect(self.resize_matrix)
+        resize_row.addWidget(self.resize_button)
         resize_row.addWidget(self.resize_input)
         resize_row.addStretch(1)
         matrix_page_layout.addLayout(resize_row)
@@ -109,14 +111,17 @@ class MatrixApp(QWidget):
         self.tolLabel = QLabel("Tolerância:")
         self.tolInput = QLineEdit()
         self.tolInput.setPlaceholderText("1e-6")
+        self.tolInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.tolLabel,self.tolInput)
         self.listLabel = QLabel("Valores iniciais:")
         self.listInput = QLineEdit()
         self.listInput.setPlaceholderText("[0...0]")
+        self.listInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.listLabel, self.listInput)
         self.iterLabel = QLabel("Máximo de iterações")
         self.iterInput = QLineEdit()
         self.iterInput.setPlaceholderText("100")
+        self.iterInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.iterLabel,self.iterInput)
         self.metodo_iterativo_widget.setVisible(False)
         matrix_page_layout.addWidget(self.metodo_iterativo_widget,stretch=1)
@@ -132,17 +137,20 @@ class MatrixApp(QWidget):
 
         self.x_data_input = QLineEdit()
         self.x_data_input.setPlaceholderText("Ex: 3.0, 3.6, 7")
+        self.x_data_input.returnPressed.connect(self.calcular)
         self.xLabel = QLabel("Pontos X (separados por vírgula):")
         interp_layout.addRow(self.xLabel, self.x_data_input)
 
         self.y_data_input = QLineEdit()
         self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+        self.y_data_input.returnPressed.connect(self.calcular)
         self.yLabel = QLabel("Pontos Y (separados por vírgula):")
         interp_layout.addRow(self.yLabel, self.y_data_input)
 
         #O ponto x o qual queremos achar o valor do polinômio
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
+        self.x_interpolar_input.returnPressed.connect(self.calcular)
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
         interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
 
@@ -178,10 +186,11 @@ class MatrixApp(QWidget):
                                     QPushButton:hover{
                                     background-color: #4D7C94
                                     }
+                                    /*
                                     QPushButton:focus {
                                     outline: none;
                                     }
-
+                                    */
                                     QPushButton#Aumentar{
                                     font-size: 30px;
                                     background-color: #4CAF50; /* Verde */
@@ -207,10 +216,11 @@ class MatrixApp(QWidget):
                                     font-size: 14px;
                                     min-width: 95px;
                                     }
-                                    QComboBox:focus {
-                                    outline: none;
+                                    
+                                    QComboBox:focus{
+                                    border: 3px solid rgba(0,0,255,0.5);
                                     }
-
+                                    
                                     QCheckBox {
                                         spacing: 10px; /* Espaço entre o interruptor e o texto */
                                     }
@@ -368,6 +378,7 @@ class MatrixApp(QWidget):
                 line_edit.setFixedSize(60, 30)
                 line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 line_edit.setText(self.matrix_data[row-1][col])
+                line_edit.returnPressed.connect(self.calcular)
                 self.matrix_grid_layout.addWidget(line_edit, row, col)
                 row_widgets.append(line_edit)
             self.matrix_widgets.append(row_widgets)
