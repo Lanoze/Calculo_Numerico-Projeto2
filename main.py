@@ -111,14 +111,17 @@ class MatrixApp(QWidget):
         self.tolLabel = QLabel("Tolerância:")
         self.tolInput = QLineEdit()
         self.tolInput.setPlaceholderText("1e-6")
+        self.tolInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.tolLabel,self.tolInput)
         self.listLabel = QLabel("Valores iniciais:")
         self.listInput = QLineEdit()
         self.listInput.setPlaceholderText("[0...0]")
+        self.listInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.listLabel, self.listInput)
         self.iterLabel = QLabel("Máximo de iterações")
         self.iterInput = QLineEdit()
         self.iterInput.setPlaceholderText("100")
+        self.iterInput.returnPressed.connect(self.calcular)
         metodo_iterativoLayout.addRow(self.iterLabel,self.iterInput)
         self.metodo_iterativo_widget.setVisible(False)
         matrix_page_layout.addWidget(self.metodo_iterativo_widget,stretch=1)
@@ -134,17 +137,20 @@ class MatrixApp(QWidget):
 
         self.x_data_input = QLineEdit()
         self.x_data_input.setPlaceholderText("Ex: 3.0, 3.6, 7")
+        self.x_data_input.returnPressed.connect(self.calcular)
         self.xLabel = QLabel("Pontos X (separados por vírgula):")
         interp_layout.addRow(self.xLabel, self.x_data_input)
 
         self.y_data_input = QLineEdit()
         self.y_data_input.setPlaceholderText("Ex: 1.0, 7.5, 16.0")
+        self.y_data_input.returnPressed.connect(self.calcular)
         self.yLabel = QLabel("Pontos Y (separados por vírgula):")
         interp_layout.addRow(self.yLabel, self.y_data_input)
 
         #O ponto x o qual queremos achar o valor do polinômio
         self.x_interpolar_input = QLineEdit()
         self.x_interpolar_input.setPlaceholderText("Ex: 3.0")
+        self.x_interpolar_input.returnPressed.connect(self.calcular)
         self.label_x_interpolar = QLabel("Valor de x para interpolar:")
         interp_layout.addRow(self.label_x_interpolar, self.x_interpolar_input)
 
