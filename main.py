@@ -218,7 +218,8 @@ class MatrixApp(QWidget):
                                     }
 
                                     QComboBox {
-                                    border: 1px solid #555;
+                                    /* Colocar a borda transparente faz ela se comportar como outline */
+                                    border: 3px solid transparent;
                                     border-radius: 5px;
                                     padding: 5px 10px;
                                     background-color: #5B92A8;
@@ -228,7 +229,8 @@ class MatrixApp(QWidget):
                                     }
                                     
                                     QComboBox:focus{
-                                    border: 3px solid rgba(0,0,255,0.5);
+                                    border-color: rgba(0,0,255,0.5);
+                                    /* padding: 2px 7px; */
                                     }
                                     
                                     QCheckBox {
